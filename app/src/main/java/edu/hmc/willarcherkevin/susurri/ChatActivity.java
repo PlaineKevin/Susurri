@@ -1,17 +1,36 @@
 package edu.hmc.willarcherkevin.susurri;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.parse.Parse;
+import com.parse.ParseACL;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 
 public class ChatActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+            super.onCreate(savedInstanceState);
+
+            // Enable Local Datastore.
+            Parse.enableLocalDatastore(this);
+
+            // Add your initialization code here
+            Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+            ParseObject testObject = new ParseObject("TestObject");
+            testObject.put("does", "this work?");
+            testObject.saveInBackground();
+
+            ParseUser.enableAutomaticUser();
+            ParseACL defaultACL = new ParseACL();
+            // Optionally enable public read access.
+            // defaultACL.setPublicReadAccess(true);
+            ParseACL.setDefaultACL(defaultACL, true);
     }
 
 
