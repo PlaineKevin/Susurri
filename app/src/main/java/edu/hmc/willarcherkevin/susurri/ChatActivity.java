@@ -23,7 +23,7 @@ public class ChatActivity extends ActionBarActivity {
             // Add your initialization code here
             Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
             ParseObject testObject = new ParseObject("TestObject");
-            testObject.put("does", "this work?");
+            testObject.put("int", 190000);
             testObject.saveInBackground();
 
             ParseUser.enableAutomaticUser();
