@@ -2,6 +2,7 @@ package edu.hmc.willarcherkevin.susurri;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,14 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.parse.GetCallback;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ChatActivity extends ActionBarActivity implements View.OnClickListener{
@@ -49,23 +52,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
             //Non-Parse thingys
             mNameList = new ArrayList();
-            ParseObject textThread = new ParseObject("textThread");
-            textThread.put("thread", mNameList);
-            textThread.saveInBackground();
-
-            textThread.fetchInBackground(new GetCallback<ParseObject>() {
-                public void done(ParseObject object, ParseException e) {
-                    if (e == null) {
-                        // Success!
-                        mArrayAdapter.notifyDataSetChanged();
-                    } else {
-                        // Failure!x
-                    }
-                }
-            });
-
-
-
 
             // 2. Access the Button defined in layout XML
             // and listen for it here
@@ -109,13 +95,44 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateChat(String room){
+        //clear the list, will get everything from server in sec
+        mNameList.clear();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("commentObject");
+        query.whereEqualTo("room", room);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> commentList, ParseException e) {
+                if (e == null) {
+                    for (ParseObject c: commentList){
+                        mNameList.add(c.getString("comment"));
+                    }
+
+                    mArrayAdapter.notifyDataSetChanged();
+
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+
     @Override
     public void onClick(View v) {
         // Also add that value to the list shown in the ListView
         String comment = mainEditText.getText().toString();
-        mNameList.add(comment);
-        mArrayAdapter.notifyDataSetChanged();
+        mainEditText.setText("");
 
+        ParseObject commentObject = new ParseObject("commentObject");
+
+        long time = System.currentTimeMillis();
+        commentObject.put("comment", comment);
+        commentObject.put("time", time);
+        commentObject.put("room", "mainroom");
+        commentObject.saveInBackground();
+
+        updateChat("mainroom");
 
     }
 }
