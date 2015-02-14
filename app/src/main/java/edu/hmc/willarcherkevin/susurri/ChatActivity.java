@@ -44,6 +44,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
             Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
 
             ParseUser.enableAutomaticUser();
+            ParseUser.getCurrentUser().saveInBackground();
             ParseACL defaultACL = new ParseACL();
             // Optionally enable public read access.
             // defaultACL.setPublicReadAccess(true);
