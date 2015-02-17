@@ -16,8 +16,10 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +39,9 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_chat);
 
-            // Enable Local Datastore.
-            Parse.enableLocalDatastore(this);
 
-            // Add your initialization code here
-            Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+               // Initialize the Parse SDK.
+             Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
 
             ParseUser.enableAutomaticUser();
             ParseUser.getCurrentUser().saveInBackground();
@@ -49,6 +49,18 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
             // Optionally enable public read access.
             // defaultACL.setPublicReadAccess(true);
             ParseACL.setDefaultACL(defaultACL, true);
+
+
+            ParsePush.subscribeInBackground("Chatroom", new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                    } else {
+                        Log.e("com.parse.push", "failed to subscribe for push", e);
+                    }
+                }
+            });
 
 
             //Non-Parse thingys
@@ -128,12 +140,17 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         ParseObject commentObject = new ParseObject("commentObject");
 
         long time = System.currentTimeMillis();
-        commentObject.put("comment", comment);
-        commentObject.put("time", time);
-        commentObject.put("room", "mainroom");
-        commentObject.saveInBackground();
+//        commentObject.put("comment", comment);
+//        commentObject.put("time", time);
+//        commentObject.put("room", "mainroom");
+//        commentObject.saveInBackground();
 
-        updateChat("mainroom");
+        ParsePush push = new ParsePush();
+        push.setChannel("Chatroom");
+        push.setMessage(comment);
+        push.sendInBackground();
+
+//        updateChat("mainroom");
 
     }
 }
