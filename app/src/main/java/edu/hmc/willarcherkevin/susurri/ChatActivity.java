@@ -1,6 +1,7 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseQueryAdapter;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -32,46 +34,75 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     ArrayAdapter mArrayAdapter;
     ArrayList mNameList;
 
+    private ParseQueryAdapter<ParseObject> mainAdapter;
+    //update interval time
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_chat);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
 
-            // Enable Local Datastore.
-            Parse.enableLocalDatastore(this);
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
 
-            // Add your initialization code here
-            Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+        // Add your initialization code here
+        Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
 
-            ParseUser.enableAutomaticUser();
-            ParseUser.getCurrentUser().saveInBackground();
-            ParseACL defaultACL = new ParseACL();
-            // Optionally enable public read access.
-            // defaultACL.setPublicReadAccess(true);
-            ParseACL.setDefaultACL(defaultACL, true);
+        ParseUser.enableAutomaticUser();
+        ParseUser.getCurrentUser().saveInBackground();
+        ParseACL defaultACL = new ParseACL();
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
 
 
-            //Non-Parse thingys
-            mNameList = new ArrayList();
+        //Non-Parse thingys
+        mNameList = new ArrayList();
 
-            // 2. Access the Button defined in layout XML
-            // and listen for it here
-            mainButton = (Button) findViewById(R.id.main_button);
-            mainButton.setOnClickListener(this);
+        // 2. Access the Button defined in layout XML
+        // and listen for it here
+        mainButton = (Button) findViewById(R.id.main_button);
+        mainButton.setOnClickListener(this);
 
-            // 3. Access the EditText defined in layout XML
-            mainEditText = (EditText) findViewById(R.id.main_edittext);
+        // 3. Access the EditText defined in layout XML
+        mainEditText = (EditText) findViewById(R.id.main_edittext);
 
-            // 4. Access the ListView
-            mainListView = (ListView) findViewById(R.id.main_listview);
+        // 4. Access the ListView
+        mainListView = (ListView) findViewById(R.id.main_listview);
 
-            // Create an ArrayAdapter for the ListView
-            mArrayAdapter = new ArrayAdapter(this,
-                    android.R.layout.simple_list_item_1,
-                    mNameList);
-            // Set the ListView to use the ArrayAdapter
-            mainListView.setAdapter(mArrayAdapter);
+        ParseQueryAdapter.QueryFactory<ParseObject> factory =
+                new ParseQueryAdapter.QueryFactory<ParseObject>() {
+                    public ParseQuery create() {
+                        ParseQuery query = new ParseQuery("commentObject");
+                        query.whereEqualTo("room", "mainroom");
+                        query.orderByAscending("time");
+                        return query;
+                    }
+                };
+
+
+        mainAdapter = new ParseQueryAdapter<ParseObject>(this, factory);
+        mainAdapter.setTextKey("comment");
+
+        mainListView.setAdapter(mainAdapter);
+        mainAdapter.loadObjects();
+
+        //Start refreshing app
+        mHandler = new Handler();
+        mStatusChecker.run();
     }
+
+    //Gets the app to update every 5 sec
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            mainAdapter.loadObjects();
+            mainAdapter.notifyDataSetChanged();
+            mHandler.postDelayed(mStatusChecker, mInterval);
+        }
+    };
 
 
     @Override
@@ -96,6 +127,8 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+
+    //Old code. Not used
     private void updateChat(String room){
         //clear the list, will get everything from server in sec
         mNameList.clear();
@@ -133,7 +166,8 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         commentObject.put("room", "mainroom");
         commentObject.saveInBackground();
 
-        updateChat("mainroom");
+        mainAdapter.loadObjects();
+        mainAdapter.notifyDataSetChanged();
 
     }
 }
