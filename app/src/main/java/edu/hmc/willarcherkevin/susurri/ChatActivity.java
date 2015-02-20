@@ -15,6 +15,7 @@ import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -36,53 +37,60 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_chat);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
 
 
-               // Initialize the Parse SDK.
-             Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+        // Initialize the Parse SDK.
+        Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
 
-            ParseUser.enableAutomaticUser();
-            ParseUser.getCurrentUser().saveInBackground();
-            ParseACL defaultACL = new ParseACL();
-            // Optionally enable public read access.
-            // defaultACL.setPublicReadAccess(true);
-            ParseACL.setDefaultACL(defaultACL, true);
+        ParseUser.enableAutomaticUser();
+        ParseUser.getCurrentUser().saveInBackground();
+        ParseACL defaultACL = new ParseACL();
+        // Optionally enable public read access.
+        // defaultACL.setPublicReadAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
 
+        // Save the current Installation to Parse.
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 
-            ParsePush.subscribeInBackground("Chatroom", new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                    } else {
-                        Log.e("com.parse.push", "failed to subscribe for push", e);
-                    }
+        // allows read and write access to all users
+        ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
+        postACL.setPublicReadAccess(true);
+        postACL.setPublicWriteAccess(true);
+
+        ParsePush.subscribeInBackground("Chatroom", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
                 }
-            });
+            }
+        });
 
 
-            //Non-Parse thingys
-            mNameList = new ArrayList();
+        //Non-Parse thingys
+        mNameList = new ArrayList();
 
-            // 2. Access the Button defined in layout XML
-            // and listen for it here
-            mainButton = (Button) findViewById(R.id.main_button);
-            mainButton.setOnClickListener(this);
+        // 2. Access the Button defined in layout XML
+        // and listen for it here
+        mainButton = (Button) findViewById(R.id.main_button);
+        mainButton.setOnClickListener(this);
 
-            // 3. Access the EditText defined in layout XML
-            mainEditText = (EditText) findViewById(R.id.main_edittext);
+        // 3. Access the EditText defined in layout XML
+        mainEditText = (EditText) findViewById(R.id.main_edittext);
 
-            // 4. Access the ListView
-            mainListView = (ListView) findViewById(R.id.main_listview);
+        // 4. Access the ListView
+        mainListView = (ListView) findViewById(R.id.main_listview);
 
-            // Create an ArrayAdapter for the ListView
-            mArrayAdapter = new ArrayAdapter(this,
-                    android.R.layout.simple_list_item_1,
-                    mNameList);
-            // Set the ListView to use the ArrayAdapter
-            mainListView.setAdapter(mArrayAdapter);
+        // Create an ArrayAdapter for the ListView
+        mArrayAdapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1,
+                mNameList);
+        // Set the ListView to use the ArrayAdapter
+        mainListView.setAdapter(mArrayAdapter);
     }
 
 
@@ -130,7 +138,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         });
     }
 
-
     @Override
     public void onClick(View v) {
         // Also add that value to the list shown in the ListView
@@ -147,7 +154,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
         ParsePush push = new ParsePush();
         push.setChannel("Chatroom");
-        push.setMessage(comment);
+        push.setMessage("Does this send to everyone?");
         push.sendInBackground();
 
 //        updateChat("mainroom");
