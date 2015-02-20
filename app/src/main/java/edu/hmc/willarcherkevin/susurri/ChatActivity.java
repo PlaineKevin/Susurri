@@ -14,6 +14,7 @@ import android.widget.ListView;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -21,6 +22,9 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
 
         // Initialize the Parse SDK.
@@ -155,6 +160,15 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         ParsePush push = new ParsePush();
         push.setChannel("Chatroom");
         push.setMessage("Does this send to everyone?");
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("action", "edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        push.setData(jsonObject);
         push.sendInBackground();
 
 //        updateChat("mainroom");
