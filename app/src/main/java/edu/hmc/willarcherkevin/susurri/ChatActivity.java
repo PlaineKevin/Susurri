@@ -18,7 +18,6 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseQueryAdapter;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     ArrayAdapter mArrayAdapter;
     ArrayList mNameList;
 
-    private ParseQueryAdapter<ParseObject> mainAdapter;
+    private ChatAdapter mainAdapter;
     //update interval time
     private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
@@ -72,19 +71,8 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         // 4. Access the ListView
         mainListView = (ListView) findViewById(R.id.main_listview);
 
-        ParseQueryAdapter.QueryFactory<ParseObject> factory =
-                new ParseQueryAdapter.QueryFactory<ParseObject>() {
-                    public ParseQuery create() {
-                        ParseQuery query = new ParseQuery("commentObject");
-                        query.whereEqualTo("room", "mainroom");
-                        query.orderByAscending("time");
-                        return query;
-                    }
-                };
 
-
-        mainAdapter = new ParseQueryAdapter<ParseObject>(this, factory);
-        mainAdapter.setTextKey("comment");
+        mainAdapter = new ChatAdapter(this);
 
         mainListView.setAdapter(mainAdapter);
         mainAdapter.loadObjects();
