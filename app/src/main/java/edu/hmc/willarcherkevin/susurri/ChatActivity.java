@@ -21,7 +21,11 @@ import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.PushService;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +49,8 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+        // Specify an Activity to handle all pushes by default.
+        PushService.setDefaultPushCallback(this, ChatActivity.class);
 
         ParseUser.enableAutomaticUser();
         ParseUser.getCurrentUser().saveInBackground();
@@ -147,17 +153,25 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mainEditText.setText("");
 
         ParseObject commentObject = new ParseObject("commentObject");
+        // TODO Auto-generated method stub
+        JSONObject obj;
+        try {
+            obj =new JSONObject();
+            obj.put("action","edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
 
-        long time = System.currentTimeMillis();
-//        commentObject.put("comment", comment);
-//        commentObject.put("time", time);
-//        commentObject.put("room", "mainroom");
-//        commentObject.saveInBackground();
+            ParsePush push = new ParsePush();
+            ParseQuery query = ParseInstallation.getQuery();
 
-        ParsePush push = new ParsePush();
-        push.setChannel("NewChatRoom");
-        push.setMessage(comment);
-        push.sendInBackground();
+
+            // Notification for Android users
+            push.setChannel("NewChatRoom");
+            push.setQuery(query);
+            push.setData(obj);
+            push.sendInBackground();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 //        updateChat("mainroom");
 
