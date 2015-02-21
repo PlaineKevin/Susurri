@@ -23,9 +23,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +61,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         postACL.setPublicReadAccess(true);
         postACL.setPublicWriteAccess(true);
 
-        ParsePush.subscribeInBackground("Chatroom", new SaveCallback() {
+        ParsePush.subscribeInBackground("NewChatRoom", new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
@@ -158,17 +155,8 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 //        commentObject.saveInBackground();
 
         ParsePush push = new ParsePush();
-        push.setChannel("Chatroom");
-        push.setMessage("Does this send to everyone?");
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("action", "edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        push.setData(jsonObject);
+        push.setChannel("NewChatRoom");
+        push.setMessage(comment);
         push.sendInBackground();
 
 //        updateChat("mainroom");

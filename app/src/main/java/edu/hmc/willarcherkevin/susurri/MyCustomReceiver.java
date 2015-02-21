@@ -2,7 +2,6 @@ package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.parse.ParsePushBroadcastReceiver;
 
@@ -20,7 +19,7 @@ public class MyCustomReceiver extends ParsePushBroadcastReceiver {
 //        {
 //            String action = intent.getAction();
 //            Log.d(TAG, "got action " + action );
-        Log.e(MY_NOTIFICATIONS_RECEIVER, "in onReceive()");
+//        Log.e(MY_NOTIFICATIONS_RECEIVER, "in onReceive()");
 
 //        }
 
