@@ -44,39 +44,22 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        ParseAnalytics.trackAppOpenedInBackground(getIntent());
-
 
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-        // Specify an Activity to handle all pushes by default.
-        PushService.setDefaultPushCallback(this, ChatActivity.class);
 
-        ParseUser.enableAutomaticUser();
         ParseUser.getCurrentUser().saveInBackground();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
-        // Save the current Installation to Parse.
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        setupNotifications();
 
         // allows read and write access to all users
         ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
         postACL.setPublicReadAccess(true);
         postACL.setPublicWriteAccess(true);
-
-        ParsePush.subscribeInBackground("NewChatRoom", new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                } else {
-                    Log.e("com.parse.push", "failed to subscribe for push", e);
-                }
-            }
-        });
 
 
         //Non-Parse thingys
@@ -99,6 +82,28 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
                 mNameList);
         // Set the ListView to use the ArrayAdapter
         mainListView.setAdapter(mArrayAdapter);
+    }
+
+    public void setupNotifications() {
+        ParseAnalytics.trackAppOpenedInBackground(getIntent());
+
+        // Specify an Activity to handle all pushes by default.
+        PushService.setDefaultPushCallback(this, ChatActivity.class);
+        ParseUser.enableAutomaticUser();
+
+        // Save the current Installation to Parse.
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+
+        ParsePush.subscribeInBackground("NewChatRoom", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
     }
 
 
@@ -148,11 +153,18 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        mainEditText.setText("");
+        sendToChannel();
+        
+        ParseObject commentObject = new ParseObject("commentObject");
+//        updateChat("mainroom");
+
+    }
+
+    public void sendToChannel() {
         // Also add that value to the list shown in the ListView
         String comment = mainEditText.getText().toString();
-        mainEditText.setText("");
 
-        ParseObject commentObject = new ParseObject("commentObject");
         // TODO Auto-generated method stub
         JSONObject obj;
         try {
@@ -172,8 +184,5 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-//        updateChat("mainroom");
-
     }
 }
