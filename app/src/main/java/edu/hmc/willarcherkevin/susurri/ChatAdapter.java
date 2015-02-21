@@ -27,7 +27,7 @@ public class ChatAdapter extends ParseQueryAdapter {
                 return query;
             }
         });
-        
+
     }
 
     // Customize the layout by overriding getItemView

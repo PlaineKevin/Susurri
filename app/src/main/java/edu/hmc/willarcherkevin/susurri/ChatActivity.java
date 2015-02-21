@@ -3,25 +3,17 @@ package edu.hmc.willarcherkevin.susurri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class ChatActivity extends ActionBarActivity implements View.OnClickListener{
@@ -30,8 +22,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     EditText mainEditText;
 
     ListView mainListView;
-    ArrayAdapter mArrayAdapter;
-    ArrayList mNameList;
 
     private ChatAdapter mainAdapter;
     //update interval time
@@ -56,10 +46,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         // defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
-
-        //Non-Parse thingys
-        mNameList = new ArrayList();
-
         // 2. Access the Button defined in layout XML
         // and listen for it here
         mainButton = (Button) findViewById(R.id.main_button);
@@ -72,8 +58,12 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mainListView = (ListView) findViewById(R.id.main_listview);
 
 
-        mainAdapter = new ChatAdapter(this);
+        setupFrontend();
 
+    }
+
+    private void setupFrontend(){
+        mainAdapter = new ChatAdapter(this);
         mainListView.setAdapter(mainAdapter);
         mainAdapter.loadObjects();
 
@@ -86,8 +76,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     Runnable mStatusChecker = new Runnable() {
         @Override
         public void run() {
-            mainAdapter.loadObjects();
-            mainAdapter.notifyDataSetChanged();
+            updateChat();
             mHandler.postDelayed(mStatusChecker, mInterval);
         }
     };
@@ -117,45 +106,27 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
 
     //Old code. Not used
-    private void updateChat(String room){
-        //clear the list, will get everything from server in sec
-        mNameList.clear();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("commentObject");
-        query.whereEqualTo("room", room);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> commentList, ParseException e) {
-                if (e == null) {
-                    for (ParseObject c: commentList){
-                        mNameList.add(c.getString("comment"));
-                    }
-
-                    mArrayAdapter.notifyDataSetChanged();
-
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
+    private void updateChat(){
+        mainAdapter.loadObjects();
+        mainAdapter.notifyDataSetChanged();
     }
 
 
-    @Override
-    public void onClick(View v) {
-        // Also add that value to the list shown in the ListView
+    private void sendtoParse(){
         String comment = mainEditText.getText().toString();
         mainEditText.setText("");
 
         ParseObject commentObject = new ParseObject("commentObject");
 
-        long time = System.currentTimeMillis();
         commentObject.put("comment", comment);
-        commentObject.put("time", time);
         commentObject.put("room", "mainroom");
         commentObject.saveInBackground();
 
-        mainAdapter.loadObjects();
-        mainAdapter.notifyDataSetChanged();
+        updateChat();
+    }
 
+    @Override
+    public void onClick(View v) {
+        sendtoParse();
     }
 }
