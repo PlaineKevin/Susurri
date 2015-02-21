@@ -155,7 +155,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     public void onClick(View v) {
         mainEditText.setText("");
         sendToChannel();
-        
+
         ParseObject commentObject = new ParseObject("commentObject");
 //        updateChat("mainroom");
 
