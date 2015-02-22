@@ -5,13 +5,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
@@ -28,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class ChatActivity extends ActionBarActivity implements View.OnClickListener{
@@ -40,6 +39,11 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     ArrayAdapter mArrayAdapter;
     ArrayList mNameList;
 
+    private ChatAdapter mainAdapter;
+    //update interval time
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+
 
         ParseUser.getCurrentUser().saveInBackground();
         ParseACL defaultACL = new ParseACL();
@@ -76,12 +81,14 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         // 4. Access the ListView
         mainListView = (ListView) findViewById(R.id.main_listview);
 
-        // Create an ArrayAdapter for the ListView
-        mArrayAdapter = new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1,
-                mNameList);
-        // Set the ListView to use the ArrayAdapter
-        mainListView.setAdapter(mArrayAdapter);
+        setupNotifications();
+        setupFrontend();
+    }
+
+    private void setupFrontend(){
+        mainAdapter = new ChatAdapter(this);
+        mainListView.setAdapter(mainAdapter);
+        mainAdapter.loadObjects();
     }
 
     public void setupNotifications() {
@@ -129,36 +136,29 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateChat(String room){
-        //clear the list, will get everything from server in sec
-        mNameList.clear();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("commentObject");
-        query.whereEqualTo("room", room);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> commentList, ParseException e) {
-                if (e == null) {
-                    for (ParseObject c: commentList){
-                        mNameList.add(c.getString("comment"));
-                    }
-
-                    mArrayAdapter.notifyDataSetChanged();
-
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
+    private void updateChat(){
+        mainAdapter.loadObjects();
+        mainAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View v) {
-        mainEditText.setText("");
+        sendtoParse();
         sendToChannel();
 
-        ParseObject commentObject = new ParseObject("commentObject");
-//        updateChat("mainroom");
+        mainEditText.setText("");
+    }
 
+    private void sendtoParse(){
+        String comment = mainEditText.getText().toString();
+
+        ParseObject commentObject = new ParseObject("commentObject");
+
+        commentObject.put("comment", comment);
+        commentObject.put("room", "mainroom");
+        commentObject.saveInBackground();
+
+        updateChat();
     }
 
     public void sendToChannel() {
