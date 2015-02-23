@@ -1,13 +1,12 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.os.Handler;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -36,13 +35,11 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     EditText mainEditText;
 
     ListView mainListView;
-    ArrayAdapter mArrayAdapter;
     ArrayList mNameList;
 
     private ChatAdapter mainAdapter;
-    //update interval time
-    private int mInterval = 5000; // 5 seconds by default, can be changed later
-    private Handler mHandler;
+
+    MyCustomReceiver updateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +49,15 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
 
-
-        ParseUser.getCurrentUser().saveInBackground();
+        ParseUser user = ParseUser.getCurrentUser();
+        if (user != null){
+            ParseUser.getCurrentUser().saveInBackground();
+        }
         ParseACL defaultACL = new ParseACL();
-        // Optionally enable public read access.
-        // defaultACL.setPublicReadAccess(true);
+//        Optionally enable public read access.
+        defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
+
         ParseACL.setDefaultACL(defaultACL, true);
 
         setupNotifications();
@@ -66,9 +67,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         postACL.setPublicReadAccess(true);
         postACL.setPublicWriteAccess(true);
 
-
-        //Non-Parse thingys
-        mNameList = new ArrayList();
 
         // 2. Access the Button defined in layout XML
         // and listen for it here
@@ -115,6 +113,23 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        //unregister our receiver
+        this.unregisterReceiver(updateReceiver);
+    }
+
+    @Override
+    protected  void onResume(){
+        super.onResume();
+        updateReceiver = new MyCustomReceiver(this);
+        IntentFilter intentFilter = new IntentFilter(
+                "edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
+        this.registerReceiver(updateReceiver, intentFilter);
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
@@ -136,7 +151,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateChat(){
+    public void updateChat(){
         mainAdapter.loadObjects();
         mainAdapter.notifyDataSetChanged();
     }

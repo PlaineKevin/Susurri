@@ -8,10 +8,11 @@ import android.util.Log;
 public class MyCustomReceiver extends BroadcastReceiver {
     private static final String TAG = "MyCustomReceiver";
 
-    boolean updateNow = false;
+    ChatActivity activity;
 
-    public boolean needUpdate(boolean updateNow) {
-        return updateNow;
+    public MyCustomReceiver(ChatActivity a){
+        super();
+        activity = a;
     }
 
     @Override
@@ -22,10 +23,7 @@ public class MyCustomReceiver extends BroadcastReceiver {
         }
         else
         {
-            String action = intent.getAction();
-            Log.d(TAG, "HELLLOOOO");
-            updateNow = true;
-
+            activity.updateChat();
         }
     }
 
