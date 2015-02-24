@@ -154,6 +154,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     public void updateChat(){
         mainAdapter.loadObjects();
         mainAdapter.notifyDataSetChanged();
+        mainListView.smoothScrollToPosition(0);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         commentObject.put("room", "mainroom");
         commentObject.saveInBackground();
 
-        updateChat();
+//        updateChat();
     }
 
     public void sendToChannel() {

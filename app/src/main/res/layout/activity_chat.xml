@@ -7,19 +7,25 @@
 
     <ListView
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="20dp"
+
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+
+        android:listSelector="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
         />
+
 
     <!-- This nested layout contains views of its own -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/bottom_row">
 
         <!-- Set OnClickListener to trigger results when pressed -->
         <!-- Displays keyboard when touched -->
@@ -27,9 +33,10 @@
             android:id="@+id/main_edittext"
             android:layout_weight="2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
+            android:maxLength="140"
+            android:singleLine="false"
             android:hint="@string/hint"
             />
 
@@ -37,10 +44,11 @@
             android:id="@+id/main_button"
             android:layout_weight="7"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="match_parent"
+
             android:layout_marginLeft="20dp"
-            android:text="@string/button" />
+            android:text="@string/button"
+            />
     </LinearLayout>
 
 

@@ -16,17 +16,22 @@ import java.util.Date;
 /**
  * Created by archerwheeler on 2/17/15.
  */
+
 public class ChatAdapter extends ParseQueryAdapter {
+
+    static final int MAX_LENGTH = 10;
 
     public ChatAdapter(Context context){
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
             public ParseQuery create() {
                 ParseQuery query = new ParseQuery("commentObject");
                 query.whereEqualTo("room", "mainroom");
-                query.orderByAscending("createdAt");
+                query.orderByDescending("createdAt");
+                query.setLimit(MAX_LENGTH);
                 return query;
             }
         });
+        this.setPaginationEnabled(false);
 
     }
 
@@ -43,6 +48,7 @@ public class ChatAdapter extends ParseQueryAdapter {
         commentLine.setText(object.getString("comment"));
 
         Date time = object.getCreatedAt();
+
         Format formatter = new SimpleDateFormat("HH:mm");
         String s = formatter.format(time);
 
