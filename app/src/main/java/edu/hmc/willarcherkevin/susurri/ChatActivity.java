@@ -53,6 +53,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         if (user != null){
             ParseUser.getCurrentUser().saveInBackground();
         }
+
         ParseACL defaultACL = new ParseACL();
 //        Optionally enable public read access.
         defaultACL.setPublicReadAccess(true);
@@ -173,8 +174,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         commentObject.put("comment", comment);
         commentObject.put("room", "mainroom");
         commentObject.saveInBackground();
-
-//        updateChat();
     }
 
     public void sendToChannel() {
