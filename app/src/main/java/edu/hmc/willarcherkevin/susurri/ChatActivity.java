@@ -81,7 +81,7 @@ public class ChatActivity extends Fragment implements View.OnClickListener{
         super.onResume();
         updateReceiver = new MyCustomReceiver(this, room);
         IntentFilter intentFilter = new IntentFilter(
-                "edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
+                "edu.hmc.willarcherkevin.susurri." + room.toUpperCase());
         getActivity().registerReceiver(updateReceiver, intentFilter);
     }
 
@@ -140,7 +140,8 @@ public class ChatActivity extends Fragment implements View.OnClickListener{
         JSONObject obj;
         try {
             obj =new JSONObject();
-            obj.put("action","edu.hmc.willarcherkevin.susurri.UPDATE_STATUS");
+
+            obj.put("action","edu.hmc.willarcherkevin.susurri." + room.toUpperCase());
 
             ParsePush push = new ParsePush();
             ParseQuery query = ParseInstallation.getQuery();
