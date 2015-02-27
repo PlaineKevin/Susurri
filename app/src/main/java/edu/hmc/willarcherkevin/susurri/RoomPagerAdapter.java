@@ -18,7 +18,10 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        Fragment fragment = new ChatActivity();
+        ChatActivity fragment = new ChatActivity();
+        if (i == 1){
+            fragment.setRoom("otherroom");
+        }
         Bundle args = new Bundle();
         // Our object is just an integer :-P
         args.putInt(ChatActivity.ARG_OBJECT, i + 1);

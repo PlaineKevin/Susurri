@@ -21,11 +21,11 @@ public class ChatAdapter extends ParseQueryAdapter {
 
     static final int MAX_LENGTH = 10;
 
-    public ChatAdapter(Context context){
+    public ChatAdapter(Context context, final String room){
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
             public ParseQuery create() {
                 ParseQuery query = new ParseQuery("commentObject");
-                query.whereEqualTo("room", "mainroom");
+                query.whereEqualTo("room", room);
                 query.orderByDescending("createdAt");
                 query.setLimit(MAX_LENGTH);
                 return query;
@@ -56,5 +56,13 @@ public class ChatAdapter extends ParseQueryAdapter {
         timeLine.setText(s);
 
         return v;
+
     }
+
+    @Override
+    public ParseObject getItem(int i){
+        int flip = getCount() - i -1;
+        return super.getItem(flip);
+    }
+
 }

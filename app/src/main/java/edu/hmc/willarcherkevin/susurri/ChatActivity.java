@@ -61,7 +61,7 @@ public class ChatActivity extends Fragment implements View.OnClickListener{
         // 4. Access the ListView
         mainListView = (ListView) rootView.findViewById(R.id.main_listview);
 
-        mainAdapter = new ChatAdapter(getActivity());
+        mainAdapter = new ChatAdapter(getActivity(), room);
         mainListView.setAdapter(mainAdapter);
         mainAdapter.loadObjects();
 
@@ -111,7 +111,7 @@ public class ChatActivity extends Fragment implements View.OnClickListener{
     public void updateChat(){
         mainAdapter.loadObjects();
         mainAdapter.notifyDataSetChanged();
-        mainListView.smoothScrollToPosition(0);
+        mainListView.smoothScrollToPosition(mainAdapter.getCount());
     }
 
     @Override
