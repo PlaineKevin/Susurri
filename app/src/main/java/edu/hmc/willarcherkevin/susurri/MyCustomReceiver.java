@@ -9,10 +9,12 @@ public class MyCustomReceiver extends BroadcastReceiver {
     private static final String TAG = "MyCustomReceiver";
 
     ChatActivity activity;
+    String room;
 
-    public MyCustomReceiver(ChatActivity a){
+    public MyCustomReceiver(ChatActivity a, String r){
         super();
         activity = a;
+        room = r;
     }
 
     @Override
