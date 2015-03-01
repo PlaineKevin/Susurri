@@ -44,6 +44,8 @@ public class ChatAdapter extends ParseQueryAdapter {
 
         super.getItemView(object, v, parent);
 
+
+
         TextView commentLine = (TextView) v.findViewById(R.id.line);
         commentLine.setText(object.getString("comment"));
 
@@ -61,7 +63,7 @@ public class ChatAdapter extends ParseQueryAdapter {
 
     @Override
     public ParseObject getItem(int i){
-        int flip = getCount() - i -1;
+        int flip = getCount() - i - 1;
         return super.getItem(flip);
     }
 

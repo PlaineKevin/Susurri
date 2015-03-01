@@ -21,7 +21,7 @@
     <permission android:name="edu.hmc.willarcherkevin.susurri.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="edu.hmc.willarcherkevin.susurri.permission.C2D_MESSAGE" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
