@@ -22,6 +22,7 @@ public class ChatActivity extends Fragment{
 
     private ChatAdapter mainAdapter;
 
+    // for updating
     MyCustomReceiver updateReceiver;
     //defult room
     //defined here b/c fragments should have defult constructors

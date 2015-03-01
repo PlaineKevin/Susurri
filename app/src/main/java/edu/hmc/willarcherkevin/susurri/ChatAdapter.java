@@ -1,6 +1,7 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -38,13 +39,14 @@ public class ChatAdapter extends ParseQueryAdapter {
     // Customize the layout by overriding getItemView
     @Override
     public View getItemView(ParseObject object, View v, ViewGroup parent) {
-        if (v == null) {
+
+        if (v == null && object.getString("userid").equals(Settings.Secure.ANDROID_ID) ) {
+            v = View.inflate(getContext(), R.layout.right_message, null);
+        } else if(v == null){
             v = View.inflate(getContext(), R.layout.message, null);
         }
 
         super.getItemView(object, v, parent);
-
-
 
         TextView commentLine = (TextView) v.findViewById(R.id.line);
         commentLine.setText(object.getString("comment"));

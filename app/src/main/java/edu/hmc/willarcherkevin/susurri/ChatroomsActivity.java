@@ -1,6 +1,7 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -34,10 +35,6 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     Button mainButton;
     EditText mainEditText;
 
-    static ParseUser user;
-
-    public static ParseUser getUser(){return user;}
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -45,11 +42,6 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-
-        user = ParseUser.getCurrentUser();
-        if (user != null){
-            ParseUser.getCurrentUser().saveInBackground();
-        }
 
         ParseACL defaultACL = new ParseACL();
 //        Optionally enable public read access.
@@ -131,6 +123,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         commentObject.put("comment", comment);
         commentObject.put("room", room);
+        commentObject.put("userid", Settings.Secure.ANDROID_ID);
         commentObject.saveInBackground();
     }
 
