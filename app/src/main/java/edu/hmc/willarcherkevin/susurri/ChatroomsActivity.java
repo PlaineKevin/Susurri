@@ -1,5 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.location.Criteria;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -8,10 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.LocationCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -35,6 +38,8 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     EditText mainEditText;
 
     static ParseUser user;
+
+    static ParseGeoPoint gPoint;
 
     public static ParseUser getUser(){return user;}
 
@@ -126,12 +131,41 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     private void sendtoParse(String room){
 
         String comment = mainEditText.getText().toString();
+        ParseGeoPoint currentLocation = getLocation();
 
         ParseObject commentObject = new ParseObject("commentObject");
 
+
         commentObject.put("comment", comment);
         commentObject.put("room", room);
+        commentObject.put("location",currentLocation);
         commentObject.saveInBackground();
+    }
+
+    public ParseGeoPoint getLocation(){
+
+        //Set criteria of how we get location
+        Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_LOW);
+            criteria.setAltitudeRequired(false);
+            criteria.setBearingRequired(false);
+            criteria.setCostAllowed(true);
+            criteria.setPowerRequirement(Criteria.POWER_LOW);
+
+        ParseGeoPoint.getCurrentLocationInBackground(10000,criteria,new LocationCallback() {
+            @Override
+            public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                if (e == null) {
+                    gPoint = parseGeoPoint;
+
+                } else {
+                    Log.e("Location", "Error Getting Location", e);
+                }
+            }
+
+        });
+        return gPoint;
+
     }
 
     public void sendToChannel(String room) {

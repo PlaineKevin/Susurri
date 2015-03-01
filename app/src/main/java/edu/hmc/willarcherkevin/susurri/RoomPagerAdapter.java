@@ -22,10 +22,6 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
         if (i == 1){
             fragment.setRoom("otherroom");
         }
-        Bundle args = new Bundle();
-        // Our object is just an integer :-P
-        args.putInt(ChatActivity.ARG_OBJECT, i + 1);
-        fragment.setArguments(args);
         return fragment;
     }
 
