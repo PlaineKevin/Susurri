@@ -30,7 +30,7 @@ import org.json.JSONObject;
  * Created by archerwheeler on 2/26/15.
  */
 public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener{
-    static ParseGeoPoint gPoint;
+    static ParseGeoPoint gPoint = new ParseGeoPoint(0, 0);
 
     RoomPagerAdapter roomPagerAdapter;
     ViewPager mViewPager;
@@ -119,40 +119,36 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     }
 
     private void sendtoParse(String room){
-//        double[] curLocation = new double[2];
         String comment = mainEditText.getText().toString();
-        ParseGeoPoint currentLocation = getLocation();
+        getLocation();
 
-        // appends locations to array
-//        curLocation[0] = currentLocation.getLatitude();
-//        curLocation[1] = currentLocation.getLongitude();
         ParseObject commentObject = new ParseObject("kevinobject");
 
+        if (getLocation()) {
+            commentObject.put("comment", comment);
+            commentObject.put("room", room);
+            commentObject.put("location", gPoint);
 
-        commentObject.put("comment", comment);
-        commentObject.put("room", room);
-//        commentObject.put("location",curLocation);
-//        commentObject.put("latitude", currentLocation.getLatitude());
-//        commentObject.put("longitude", currentLocation.getLongitude());
+            commentObject.saveInBackground();
+        }
 
-        commentObject.saveInBackground();
     }
 
-    public ParseGeoPoint getLocation(){
-
-        //Set criteria of how we get location
+    public boolean getLocation(){
+        // Criteria defaults to web settings
         Criteria criteria = new Criteria();
 //        criteria.setAccuracy(Criteria.ACCURACY_LOW);
 //        criteria.setAltitudeRequired(false);
 //        criteria.setBearingRequired(false);
 //        criteria.setCostAllowed(true);
 //        criteria.setPowerRequirement(Criteria.POWER_LOW);
-
-        ParseGeoPoint.getCurrentLocationInBackground(10000,criteria,new LocationCallback() {
+        ParseGeoPoint.getCurrentLocationInBackground(10000, criteria, new LocationCallback() {
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
                     gPoint = parseGeoPoint;
+                    Log.d("Hello", "getLocatoinWorks");
+
 
                 } else {
                     Log.e("Location", "Error Getting Location", e);
@@ -160,9 +156,8 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
             }
 
         });
-        Log.d("Hello", "getLocatoinWorks");
-        return gPoint;
 
+        return true;
     }
 
     public void sendToChannel(String room) {
