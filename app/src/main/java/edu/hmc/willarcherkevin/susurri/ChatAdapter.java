@@ -1,7 +1,7 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
-import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -40,11 +40,21 @@ public class ChatAdapter extends ParseQueryAdapter {
     @Override
     public View getItemView(ParseObject object, View v, ViewGroup parent) {
 
-        if (v == null && object.getString("userid").equals(Settings.Secure.ANDROID_ID) ) {
+//        if(object.getString("userid") == null){
+//            v = View.inflate(getContext(), R.layout.message, null);
+//        }
+        if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
             v = View.inflate(getContext(), R.layout.right_message, null);
-        } else if(v == null){
-            v = View.inflate(getContext(), R.layout.message, null);
+            Log.d("my id:", ChatroomsActivity.androidId);
+            Log.d("thier id:", object.getString("userid"));
         }
+        else {
+            v = View.inflate(getContext(), R.layout.message, null);
+            Log.d("my id:", ChatroomsActivity.androidId);
+            Log.d("thier id:", object.getString("userid"));
+        }
+
+
 
         super.getItemView(object, v, parent);
 

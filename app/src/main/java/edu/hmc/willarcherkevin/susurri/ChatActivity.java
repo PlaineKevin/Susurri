@@ -6,19 +6,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-
-import java.util.ArrayList;
 
 
 public class ChatActivity extends Fragment{
-    Button mainButton;
-    EditText mainEditText;
 
     ListView mainListView;
-    ArrayList mNameList;
 
     private ChatAdapter mainAdapter;
 
@@ -69,29 +62,6 @@ public class ChatActivity extends Fragment{
                 "edu.hmc.willarcherkevin.susurri." + room.toUpperCase().replaceAll("\\s","_"));
         getActivity().registerReceiver(updateReceiver, intentFilter);
     }
-
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_chat, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     public void updateChat(){
         mainAdapter.loadObjects();

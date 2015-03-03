@@ -1,5 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.location.Criteria;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
@@ -9,10 +10,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.LocationCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -35,8 +38,13 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     Button mainButton;
     EditText mainEditText;
 
+    ParseGeoPoint gPoint = new ParseGeoPoint(0,0);
+
+    public static String androidId;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         setContentView(R.layout.room_pages);
 
@@ -72,6 +80,8 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
                         getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
+
+        getLocation();
 
     }
 
@@ -115,7 +125,33 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         mainEditText.setText("");
     }
 
+    public void getLocation(){
+        // Criteria defaults to web settings
+        Criteria criteria = new Criteria();
+//        criteria.setAccuracy(Criteria.ACCURACY_LOW);
+//        criteria.setAltitudeRequired(false);
+//        criteria.setBearingRequired(false);
+//        criteria.setCostAllowed(true);
+//        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        ParseGeoPoint.getCurrentLocationInBackground(10000, criteria, new LocationCallback() {
+            @Override
+            public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                if (e == null) {
+                    gPoint = parseGeoPoint;
+                    Log.d("Hello", "getLocation works");
+
+
+                } else {
+                    Log.e("Location", "Error Getting Location", e);
+                }
+            }
+
+        });
+
+    }
+
     private void sendtoParse(String room){
+        getLocation();
 
         String comment = mainEditText.getText().toString();
 
@@ -123,7 +159,8 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         commentObject.put("comment", comment);
         commentObject.put("room", room);
-        commentObject.put("userid", Settings.Secure.ANDROID_ID);
+        commentObject.put("userid", androidId);
+        commentObject.put("location", gPoint);
         commentObject.saveInBackground();
     }
 
