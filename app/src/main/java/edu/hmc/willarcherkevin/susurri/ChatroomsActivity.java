@@ -76,6 +76,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
 
+        getLocation();
     }
 
     public void setupNotifications() {
@@ -124,17 +125,15 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         ParseObject commentObject = new ParseObject("kevinobject");
 
-        if (getLocation()) {
-            commentObject.put("comment", comment);
-            commentObject.put("room", room);
-            commentObject.put("location", gPoint);
+        commentObject.put("comment", comment);
+        commentObject.put("room", room);
+        commentObject.put("location", gPoint);
 
-            commentObject.saveInBackground();
-        }
+        commentObject.saveInBackground();
 
     }
 
-    public boolean getLocation(){
+    public void getLocation(){
         // Criteria defaults to web settings
         Criteria criteria = new Criteria();
 //        criteria.setAccuracy(Criteria.ACCURACY_LOW);
@@ -147,7 +146,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
                     gPoint = parseGeoPoint;
-                    Log.d("Hello", "getLocatoinWorks");
+                    Log.d("Hello", "getLocation works");
 
 
                 } else {
@@ -157,7 +156,6 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         });
 
-        return true;
     }
 
     public void sendToChannel(String room) {
