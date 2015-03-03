@@ -1,7 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,7 +19,7 @@ import java.util.Date;
 
 public class ChatAdapter extends ParseQueryAdapter {
 
-    static final int MAX_LENGTH = 10;
+    static final int MAX_LENGTH = 15;
 
     public ChatAdapter(Context context, final String room){
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
@@ -45,13 +44,9 @@ public class ChatAdapter extends ParseQueryAdapter {
 //        }
         if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
             v = View.inflate(getContext(), R.layout.right_message, null);
-            Log.d("my id:", ChatroomsActivity.androidId);
-            Log.d("thier id:", object.getString("userid"));
         }
         else {
             v = View.inflate(getContext(), R.layout.message, null);
-            Log.d("my id:", ChatroomsActivity.androidId);
-            Log.d("thier id:", object.getString("userid"));
         }
 
 
