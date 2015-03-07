@@ -1,5 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
@@ -9,6 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseAnalytics;
@@ -27,13 +31,18 @@ import org.json.JSONObject;
 /**
  * Created by archerwheeler on 2/26/15.
  */
-public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener{
+public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     RoomPagerAdapter roomPagerAdapter;
     ViewPager mViewPager;
 
     Button mainButton;
     EditText mainEditText;
+
+    public Location mLastLocation;
+
+    protected GoogleApiClient mGoogleApiClient;
+
 
     public static String androidId;
 
@@ -55,6 +64,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         setupNotifications();
 
+
         // allows read and write access to all users
         ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
         postACL.setPublicReadAccess(true);
@@ -70,11 +80,29 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
+
+        buildGoogleApiClient();
+    }
+
+    private void createRooms(){
         roomPagerAdapter =
                 new RoomPagerAdapter(
-                        getSupportFragmentManager());
+                        getSupportFragmentManager(), this);
+    }
+
+    public void startRoom(){
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
+    }
+
+
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     public void setupNotifications() {
@@ -98,14 +126,6 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
             }
         });
     }
-
-//    protected synchronized void buildGoogleApiClient() {
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//    }
 
     @Override
     public void onClick(View v) {
@@ -155,4 +175,46 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i("Location", "CONNECTION!!!!!!");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        if (mLastLocation != null) {
+            createRooms();
+        } else {
+            Log.i("Location", "NULL location");
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i("Location", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i("Location", "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
 }
