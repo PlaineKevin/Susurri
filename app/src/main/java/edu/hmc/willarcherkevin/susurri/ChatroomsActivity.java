@@ -1,5 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.app.ProgressDialog;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -39,9 +40,13 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     Button mainButton;
     EditText mainEditText;
 
+
     public Location mLastLocation;
 
     protected GoogleApiClient mGoogleApiClient;
+
+    // added a loading spinner
+    private ProgressDialog progress;
 
 
     public static String androidId;
@@ -49,7 +54,6 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
         setContentView(R.layout.room_pages);
 
         // Initialize the Parse SDK.
@@ -82,6 +86,8 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         // fragments, so use getSupportFragmentManager.
 
         buildGoogleApiClient();
+        ProgressDialog progress = new ProgressDialog(this);
+
     }
 
     private void createRooms(){
@@ -93,6 +99,10 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     public void startRoom(){
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
+        // Once the room starts up then the loading should be done
+        if (progress != null && progress.isShowing()) {
+            progress.dismiss();
+        }
     }
 
 
@@ -179,6 +189,14 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
+        // create loading spinner
+        if (progress == null) {
+            progress = new ProgressDialog(this);
+            progress.setTitle("Please wait for our app to finish loading");
+            progress.setMessage("Loading...");
+        }
+        progress.show();
     }
 
     @Override

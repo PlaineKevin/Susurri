@@ -24,6 +24,8 @@
             android:hint="@string/hint"
             />
 
+
+
         <Button
             android:id="@+id/main_button"
             android:layout_weight="7"

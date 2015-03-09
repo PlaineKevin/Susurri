@@ -20,36 +20,8 @@
         />
 
 
-    <!-- This nested layout contains views of its own -->
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:id="@+id/bottom_row">-->
 
-        <!--&lt;!&ndash; Set OnClickListener to trigger results when pressed &ndash;&gt;-->
-        <!--&lt;!&ndash; Displays keyboard when touched &ndash;&gt;-->
-        <!--<EditText-->
-            <!--android:id="@+id/main_edittext"-->
-            <!--android:layout_weight="2"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:maxLength="140"-->
-            <!--android:singleLine="false"-->
-            <!--android:hint="@string/hint"-->
-            <!--/>-->
 
-        <!--<Button-->
-            <!--android:id="@+id/main_button"-->
-            <!--android:layout_weight="7"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-
-            <!--android:layout_marginLeft="20dp"-->
-            <!--android:text="@string/button"-->
-            <!--/>-->
-    <!--</LinearLayout>-->
 
 
 
