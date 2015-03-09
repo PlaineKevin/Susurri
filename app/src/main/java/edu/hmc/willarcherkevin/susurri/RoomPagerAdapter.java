@@ -3,6 +3,7 @@ package edu.hmc.willarcherkevin.susurri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import com.parse.FindCallback;
 import com.parse.ParseGeoPoint;
@@ -28,24 +29,26 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
         roomList = new ArrayList<String>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("RoomObject");
-        query.whereWithinKilometers("location", point, 1);
+        query.whereWithinKilometers("location", point, .033);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, com.parse.ParseException e) {
                 for (ParseObject obj : parseObjects){
                     roomList.add(obj.getString("name"));
                 }
+                if (roomList.size() == 0){
+                    roomList.add("The Great Unknown");
+                }
                 activity.startRoom();
             }
         });
-        //Hard code rooms by defult
-        roomList.add("Main Room");
     }
 
 
     @Override
     public Fragment getItem(int i) {
         ChatRoomFragment fragment = new ChatRoomFragment();
+        Log.i("SIZE", "" + i + " " + roomList.size());
         fragment.setRoom(roomList.get(i));
         return fragment;
     }
@@ -58,6 +61,6 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return roomList.size();
     }
 }
