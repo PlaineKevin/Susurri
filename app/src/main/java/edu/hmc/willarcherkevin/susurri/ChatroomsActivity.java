@@ -1,6 +1,5 @@
 package edu.hmc.willarcherkevin.susurri;
 
-import android.app.ProgressDialog;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -10,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,79 +34,79 @@ import org.json.JSONObject;
  */
 public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    //Controls room fragments
     RoomPagerAdapter roomPagerAdapter;
     ViewPager mViewPager;
 
+    //Outside of the fragments
     Button mainButton;
     EditText mainEditText;
 
-
+    //For location data
     public Location mLastLocation;
-
     protected GoogleApiClient mGoogleApiClient;
 
-    // added a loading spinner
-    private ProgressDialog progress;
+    //loading spinner
+    private ProgressBar progress;
 
-
+    //TODO replace with Parse user
+    //Unique device ID
     public static String androidId;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         setContentView(R.layout.room_pages);
+
+        //Get unique device ID
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-
         ParseACL defaultACL = new ParseACL();
-//        Optionally enable public read access.
         defaultACL.setPublicReadAccess(true);
         defaultACL.setPublicWriteAccess(true);
-
         ParseACL.setDefaultACL(defaultACL, true);
 
         setupNotifications();
-
 
         // allows read and write access to all users
         ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
         postACL.setPublicReadAccess(true);
         postACL.setPublicWriteAccess(true);
 
-        // 2. Access the Button defined in layout XML
-        // and listen for it here
+
+        // Set up button and text edit
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
-
-        // 3. Access the EditText defined in layout XML
         mainEditText = (EditText) findViewById(R.id.main_edittext);
 
-        // ViewPager and its adapters use support library
-        // fragments, so use getSupportFragmentManager.
-
+        progress = (ProgressBar) findViewById(R.id.progress);
+//        ProgressDialog progress = new ProgressDialog(this);
         buildGoogleApiClient();
-        ProgressDialog progress = new ProgressDialog(this);
+
 
     }
 
+    //Called by onConnect once location has been found
     private void createRooms(){
         roomPagerAdapter =
                 new RoomPagerAdapter(
                         getSupportFragmentManager(), this);
     }
 
+    //Call back function in Pager Aptr starts the display of
+    //The rooms once the device knows which rooms it is in
     public void startRoom(){
+        //Display rooms pulled from parse cloud
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
-        // Once the room starts up then the loading should be done
-        if (progress != null && progress.isShowing()) {
-            progress.dismiss();
-        }
+
+        progress.setVisibility(View.GONE);
     }
 
 
-
+    //Builds Google API Client so that location can be found
+    //Location is determined with connection callback interface
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -115,6 +115,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
                 .build();
     }
 
+    //Set up push notifications
     public void setupNotifications() {
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
@@ -137,20 +138,24 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         });
     }
 
+    //Called when "Post" button is pressed
     @Override
     public void onClick(View v) {
+        //Find what chat room is displayed
         int pos = mViewPager.getCurrentItem();
         String room = mViewPager.getAdapter().getPageTitle(pos).toString();
+
+        //Send comment to parse and send push notification
         sendtoParse(room);
         sendToChannel(room);
 
+        //clear textedit
         mainEditText.setText("");
     }
 
+    //Send comment info to parse
     private void sendtoParse(String room){
-
         String comment = mainEditText.getText().toString();
-
         ParseObject commentObject = new ParseObject("commentObject");
 
         commentObject.put("comment", comment);
@@ -160,21 +165,18 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     }
 
     public void sendToChannel(String room) {
-        // Also add that value to the list shown in the ListView
-        String comment = mainEditText.getText().toString();
 
         // TODO Auto-generated method stub
         JSONObject obj;
         try {
+            //Create notification to everyone in current room
             obj =new JSONObject();
-
             obj.put("action","edu.hmc.willarcherkevin.susurri." + room.toUpperCase().replaceAll("\\s","_"));
 
             ParsePush push = new ParsePush();
             ParseQuery query = ParseInstallation.getQuery();
 
-
-            // Notification for Android users
+            //Send notification for Android users
             push.setChannel("NewChatRoom");
             push.setQuery(query);
             push.setData(obj);
@@ -188,20 +190,17 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
+        //Attempt to get location
         mGoogleApiClient.connect();
 
         // create loading spinner
-        if (progress == null) {
-            progress = new ProgressDialog(this);
-            progress.setTitle("Please wait for our app to finish loading");
-            progress.setMessage("Loading...");
-        }
-        progress.show();
+        progress.setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        //Stop looking for location
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -209,14 +208,19 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i("Location", "CONNECTION!!!!!!");
+        //Get last know location from android System
+        //Should be accurate and battery efficient
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
+        //If location found query parse for rooms nearby
         if (mLastLocation != null) {
             createRooms();
-        } else {
+        }
+        //No location found. User probably has GPS turned off
+        else {
             Log.i("Location", "NULL location");
+            //TODO Display message asking user to turn on location settings
         }
     }
 

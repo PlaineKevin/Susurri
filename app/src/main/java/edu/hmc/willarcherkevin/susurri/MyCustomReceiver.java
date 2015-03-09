@@ -8,10 +8,10 @@ import android.util.Log;
 public class MyCustomReceiver extends BroadcastReceiver {
     private static final String TAG = "MyCustomReceiver";
 
-    ChatActivity activity;
+    ChatRoomFragment activity;
     String room;
 
-    public MyCustomReceiver(ChatActivity a, String r){
+    public MyCustomReceiver(ChatRoomFragment a, String r){
         super();
         activity = a;
         room = r;

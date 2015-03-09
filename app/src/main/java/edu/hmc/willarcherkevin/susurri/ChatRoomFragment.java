@@ -9,17 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 
-public class ChatActivity extends Fragment{
+public class ChatRoomFragment extends Fragment{
 
     ListView mainListView;
-
     private ChatAdapter mainAdapter;
 
     // for updating
     MyCustomReceiver updateReceiver;
-    //defult room
-    //defined here b/c fragments should have defult constructors
-    String room = "mainroom";
+    //default room defined here b/c fragments should have default constructors
+    String room = "Main Room";
 
     //Fragments are required to have empty contructors
     //so use a setRoom method to set the room

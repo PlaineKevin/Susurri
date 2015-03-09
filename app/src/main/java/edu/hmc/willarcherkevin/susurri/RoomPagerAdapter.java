@@ -45,7 +45,7 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        ChatActivity fragment = new ChatActivity();
+        ChatRoomFragment fragment = new ChatRoomFragment();
         fragment.setRoom(roomList.get(i));
         return fragment;
     }
