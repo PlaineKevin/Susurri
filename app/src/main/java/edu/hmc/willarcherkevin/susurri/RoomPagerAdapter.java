@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
 import com.parse.FindCallback;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -25,11 +24,19 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
 
         double lat =  activity.mLastLocation.getLatitude();
         double lng =  activity.mLastLocation.getLongitude();
-        ParseGeoPoint point = new ParseGeoPoint(lat, lng);
         roomList = new ArrayList<String>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("RoomObject");
-        query.whereWithinKilometers("location", point, .033);
+
+        Log.i("LAT: ", "" + lat);
+        Log.i("LNG: ", "" + lng);
+
+        query.whereLessThan("bl_lat", lat);
+        query.whereGreaterThan("ur_lat", lat);
+
+        query.whereLessThan("bl_lng", lng);
+        query.whereGreaterThan("ur_lng", lng);
+
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, com.parse.ParseException e) {

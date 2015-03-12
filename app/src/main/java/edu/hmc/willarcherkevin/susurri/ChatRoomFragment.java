@@ -43,7 +43,6 @@ public class ChatRoomFragment extends Fragment{
         return rootView;
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
