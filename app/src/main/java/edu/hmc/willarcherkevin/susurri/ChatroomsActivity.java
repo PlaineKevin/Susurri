@@ -3,9 +3,12 @@ package edu.hmc.willarcherkevin.susurri;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,7 +35,7 @@ import org.json.JSONObject;
 /**
  * Created by archerwheeler on 2/26/15.
  */
-public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class ChatroomsActivity extends ActionBarActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     //Controls room fragments
     RoomPagerAdapter roomPagerAdapter;
@@ -101,7 +104,9 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
 
+        //Restore view
         progress.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 
 
@@ -190,11 +195,25 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        //Attempt to get location
-        mGoogleApiClient.connect();
+        update();
+    }
 
-        // create loading spinner
+    private void update(){
+        //hide current view and creating loading ico
+        if (mViewPager != null) mViewPager.setVisibility(View.GONE);
         progress.setVisibility(View.VISIBLE);
+
+        //Check if connected
+        if (!mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
+
+        //otherwise update location directly
+        else{
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            createRooms();
+        }
     }
 
     @Override
@@ -212,6 +231,7 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         //Should be accurate and battery efficient
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        Log.i("Location", "CONNECTED");
 
         //If location found query parse for rooms nearby
         if (mLastLocation != null) {
@@ -221,6 +241,27 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         else {
             Log.i("Location", "NULL location");
             //TODO Display message asking user to turn on location settings
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_chat, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                onStart();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
