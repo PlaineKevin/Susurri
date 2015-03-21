@@ -97,7 +97,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
                         getSupportFragmentManager(), this);
     }
 
-    //Call back function in Pager Aptr starts the display of
+    //Call back function in Pager Adapter starts the display of
     //The rooms once the device knows which rooms it is in
     public void startRoom(){
         //Display rooms pulled from parse cloud

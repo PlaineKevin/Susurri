@@ -26,6 +26,9 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
         double lng =  activity.mLastLocation.getLongitude();
         roomList = new ArrayList<String>();
 
+        // we've created a box by manually putting in an upper right and bottom
+        // left coordinate. If the current location falls within the area of the box,
+        // then put user into specified chatroom
         ParseQuery<ParseObject> query = ParseQuery.getQuery("RoomObject");
 
         Log.i("LAT: ", "" + lat);
