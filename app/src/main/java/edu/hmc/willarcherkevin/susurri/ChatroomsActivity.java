@@ -142,6 +142,11 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         });
     }
 
+    @Override
+    public void onDestroy(){
+        ParsePush.unsubscribeInBackground("NewChatRoom");
+    }
+
     //Called when "Post" button is pressed
     @Override
     public void onClick(View v) {
