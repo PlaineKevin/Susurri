@@ -2,7 +2,7 @@ package edu.hmc.willarcherkevin.susurri;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
 import com.parse.FindCallback;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by archerwheeler on 2/26/15.
  */
-public class RoomPagerAdapter extends FragmentStatePagerAdapter {
+public class RoomPagerAdapter extends FragmentPagerAdapter {
 
     private ArrayList<String> roomList;
 
@@ -44,7 +44,7 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
                     roomList.add(obj.getString("name"));
                 }
                 if (roomList.size() == 0){
-                    roomList.add("The Great Unknown");
+                    roomList.add(activity.getString(R.string.default_room));
                 }
                 activity.startRoom();
             }
@@ -55,8 +55,8 @@ public class RoomPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         ChatRoomFragment fragment = new ChatRoomFragment();
-        Log.i("SIZE", "" + i + " " + roomList.size());
         fragment.setRoom(roomList.get(i));
+        Log.i("app:",fragment.getRoom());
         return fragment;
     }
 

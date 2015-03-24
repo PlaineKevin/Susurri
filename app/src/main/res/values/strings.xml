@@ -7,5 +7,7 @@
     <string name="button">Post</string>
     <string name="hint">comment</string>
     <string name="action_refresh">refresh</string>
+    <string name="default_room">The Great Unknown</string>
+
 
 </resources>

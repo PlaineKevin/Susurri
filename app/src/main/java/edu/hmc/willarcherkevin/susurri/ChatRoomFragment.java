@@ -16,8 +16,10 @@ public class ChatRoomFragment extends Fragment{
 
     // for updating
     MyCustomReceiver updateReceiver;
+
+
     //default room defined here b/c fragments should have default constructors
-    String room = "Main Room";
+    String room = "The Great Unknown";
 
     //Fragments are required to have empty contructors
     //so use a setRoom method to set the room
@@ -30,6 +32,7 @@ public class ChatRoomFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         View rootView = inflater.inflate(
                 R.layout.activity_chat, container, false);
 
@@ -38,6 +41,7 @@ public class ChatRoomFragment extends Fragment{
 
         mainAdapter = new ChatAdapter(getActivity(), room);
         mainListView.setAdapter(mainAdapter);
+
         mainAdapter.loadObjects();
 
         return rootView;

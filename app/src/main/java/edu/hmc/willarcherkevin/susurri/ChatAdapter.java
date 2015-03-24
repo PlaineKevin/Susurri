@@ -69,6 +69,12 @@ public class ChatAdapter extends ParseQueryAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
+    }
+
+
+    @Override
     public ParseObject getItem(int i){
         int flip = getCount() - i - 1;
         return super.getItem(flip);
