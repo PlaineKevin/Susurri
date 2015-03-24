@@ -19,10 +19,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <!--
-      IMPORTANT: Change "com.parse.tutorials.pushnotifications.permission.C2D_MESSAGE" in the lines below
-      to match your app's package name + ".permission.C2D_MESSAGE".
-    -->
     <permission android:name="edu.hmc.willarcherkevin.susurri.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="edu.hmc.willarcherkevin.susurri.permission.C2D_MESSAGE" />
@@ -55,9 +51,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.tutorials.pushnotifications" to match your app's package name.
-                -->
                 <category android:name="edu.hmc.willarcherkevin.susurri" />
             </intent-filter>
         </receiver>

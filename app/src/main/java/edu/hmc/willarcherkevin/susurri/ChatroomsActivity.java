@@ -84,7 +84,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         mainEditText = (EditText) findViewById(R.id.main_edittext);
 
         progress = (ProgressBar) findViewById(R.id.progress);
-//        ProgressDialog progress = new ProgressDialog(this);
         buildGoogleApiClient();
 
 
@@ -199,7 +198,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     }
 
     private void update(){
-        //hide current view and creating loading ico
+        //hide current view and creating loading icon
         if (mViewPager != null) mViewPager.setVisibility(View.GONE);
         progress.setVisibility(View.VISIBLE);
 

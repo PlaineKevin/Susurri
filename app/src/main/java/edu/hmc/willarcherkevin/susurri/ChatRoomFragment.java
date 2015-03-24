@@ -21,7 +21,7 @@ public class ChatRoomFragment extends Fragment{
     //default room defined here b/c fragments should have default constructors
     String room = "The Great Unknown";
 
-    //Fragments are required to have empty contructors
+    //Fragments are required to have empty constructors
     //so use a setRoom method to set the room
     public void setRoom(String r){
         room = r;
@@ -36,7 +36,7 @@ public class ChatRoomFragment extends Fragment{
         View rootView = inflater.inflate(
                 R.layout.activity_chat, container, false);
 
-        // 4. Access the ListView
+        // Access the ListView
         mainListView = (ListView) rootView.findViewById(R.id.main_listview);
 
         mainAdapter = new ChatAdapter(getActivity(), room);

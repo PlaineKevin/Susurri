@@ -22,6 +22,9 @@ public class RoomPagerAdapter extends FragmentPagerAdapter {
     public RoomPagerAdapter(FragmentManager fm, final ChatroomsActivity activity){
         super(fm);
 
+        // we've created a box by manually putting in an upper right and bottom
+        // left coordinate. If the current location falls within the area of the box,
+        // then put user into specified chatroom
         double lat =  activity.mLastLocation.getLatitude();
         double lng =  activity.mLastLocation.getLongitude();
         roomList = new ArrayList<String>();
