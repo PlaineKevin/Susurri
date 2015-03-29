@@ -17,20 +17,17 @@ import android.widget.ProgressBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.parse.Parse;
-import com.parse.ParseACL;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.PushService;
 import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.locks.Lock;
 
 /**
  * Created by archerwheeler on 2/26/15.
@@ -52,31 +49,22 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     //loading spinner
     private ProgressBar progress;
 
+    //Lock for concurrency
+    private Lock lock;
+
     //TODO replace with Parse user
     //Unique device ID
     public static String androidId;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupNotifications();
+
+
         setContentView(R.layout.room_pages);
 
         //Get unique device ID
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        // Initialize the Parse SDK.
-        Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-        ParseACL defaultACL = new ParseACL();
-        defaultACL.setPublicReadAccess(true);
-        defaultACL.setPublicWriteAccess(true);
-        ParseACL.setDefaultACL(defaultACL, true);
-
-        setupNotifications();
-
-        // allows read and write access to all users
-        ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
-        postACL.setPublicReadAccess(true);
-        postACL.setPublicWriteAccess(true);
-
 
         // Set up button and text edit
         mainButton = (Button) findViewById(R.id.main_button);
@@ -85,8 +73,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
 
         progress = (ProgressBar) findViewById(R.id.progress);
         buildGoogleApiClient();
-
-
     }
 
     //Called by onConnect once location has been found
@@ -117,34 +103,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-    }
-
-    //Set up push notifications
-    public void setupNotifications() {
-        ParseAnalytics.trackAppOpenedInBackground(getIntent());
-
-        // Specify an Activity to handle all pushes by default.
-        PushService.setDefaultPushCallback(this, ChatroomsActivity.class);
-        ParseUser.enableAutomaticUser();
-
-        // Save the current Installation to Parse.
-        ParseInstallation.getCurrentInstallation().saveInBackground();
-
-        ParsePush.subscribeInBackground("NewChatRoom", new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
-                } else {
-                    Log.e("com.parse.push", "failed to subscribe for push", e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onDestroy(){
-        ParsePush.unsubscribeInBackground("NewChatRoom");
     }
 
     //Called when "Post" button is pressed
@@ -186,7 +144,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
             ParseQuery query = ParseInstallation.getQuery();
 
             //Send notification for Android users
-            push.setChannel("NewChatRoom");
+            push.setChannel("");
             push.setQuery(query);
             push.setData(obj);
             push.sendInBackground();
@@ -200,6 +158,36 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     protected void onStart() {
         super.onStart();
         update();
+    }
+
+    @Override
+    protected  void onDestroy(){
+        ParsePush.unsubscribeInBackground("");
+        super.onDestroy();
+    }
+
+
+    //Set up push notificationss
+    public void setupNotifications() {
+        //TODO Not sure what this code does
+//        ParseAnalytics.trackAppOpenedInBackground(getIntent());
+        // Specify an Activity to handle all pushes by default.
+//        PushService.setDefaultPushCallback(this, ChatroomsActivity.class);
+//        ParseUser.enableAutomaticUser();
+
+        // Save the current Installation to Parse.
+        ParseInstallation.getCurrentInstallation().saveInBackground();
+
+        ParsePush.subscribeInBackground("", new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("com.parse.push", "successfully subscribed to the broadcast channel.");
+                } else {
+                    Log.e("com.parse.push", "failed to subscribe for push", e);
+                }
+            }
+        });
     }
 
     private void update(){

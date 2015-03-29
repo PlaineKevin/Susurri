@@ -2,7 +2,7 @@ package edu.hmc.willarcherkevin.susurri;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
 import com.parse.FindCallback;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by archerwheeler on 2/26/15.
  */
-public class RoomPagerAdapter extends FragmentPagerAdapter {
+public class RoomPagerAdapter extends FragmentStatePagerAdapter {
 
     private ArrayList<String> roomList;
 

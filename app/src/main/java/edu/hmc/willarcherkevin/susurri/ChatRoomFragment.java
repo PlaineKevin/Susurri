@@ -48,14 +48,14 @@ public class ChatRoomFragment extends Fragment{
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         super.onPause();
         //unregister our receiver
         getActivity().unregisterReceiver(updateReceiver);
     }
 
     @Override
-    public void onResume(){
+    public void onStart(){
         updateChat();
         super.onResume();
         updateReceiver = new MyCustomReceiver(this, room);
@@ -67,7 +67,6 @@ public class ChatRoomFragment extends Fragment{
     public void updateChat(){
         mainAdapter.loadObjects();
         mainAdapter.notifyDataSetChanged();
-        mainListView.smoothScrollToPosition(mainAdapter.getCount());
     }
 
 
