@@ -17,15 +17,12 @@ import android.widget.ProgressBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.parse.SignUpCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,8 +60,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setupNotifications();
 
-        //Sign in or up as a Parse user
-        setUpUsers();
 
         setContentView(R.layout.room_pages);
 
@@ -158,68 +153,15 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
             e.printStackTrace();
         }
     }
-    // setUpUsers first checks to see if a ParseUser exists and if so it will log the user in
-    // otherwise, it creates a new ParseUser with the username and password being the androidID
-    private void setUpUsers(){
-        ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    // Hooray! The user is logged in.
-                } else {
-                    ParseUser newUser = new ParseUser();
-                    user.setUsername(androidId);
-                    user.setPassword(androidId);
-
-                    // other fields can be set just like with ParseObject
-                    user.put("avatar", "Snail");
-
-                    user.signUpInBackground(new SignUpCallback() {
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                // Hooray! Let them use the app now.
-                            } else {
-                                // Sign up didn't succeed. Look at the ParseException
-                                // to figure out what went wrong
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void resumeUsers(){
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            // do stuff with the user
-        } else {
-            ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
-                public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
-                        // Hooray! The user is logged in.
-                    } else {
-                        // Signup failed. Look at the ParseException to see what happened.
-                    }
-                }
-            });
-        }
-    }
-
-    private void logoutUsers(){
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        resumeUsers();
         update();
     }
 
     @Override
     protected  void onDestroy(){
-        logoutUsers();
         ParsePush.unsubscribeInBackground("");
         super.onDestroy();
     }

@@ -5,13 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+// This class allows us to receive notifications and update the list view when necessary
 public class MyCustomReceiver extends BroadcastReceiver {
     private static final String TAG = "MyCustomReceiver";
 
-    ChatActivity activity;
+    ChatRoomFragment activity;
     String room;
 
-    public MyCustomReceiver(ChatActivity a, String r){
+    public MyCustomReceiver(ChatRoomFragment a, String r){
         super();
         activity = a;
         room = r;

@@ -24,6 +24,8 @@
             android:hint="@string/hint"
             />
 
+
+
         <Button
             android:id="@+id/main_button"
             android:layout_weight="7"
@@ -54,7 +56,13 @@
 
     </android.support.v4.view.ViewPager>
 
-
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>
 

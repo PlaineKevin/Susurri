@@ -1,7 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,7 +19,7 @@ import java.util.Date;
 
 public class ChatAdapter extends ParseQueryAdapter {
 
-    static final int MAX_LENGTH = 10;
+    static final int MAX_LENGTH = 15;
 
     public ChatAdapter(Context context, final String room){
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
@@ -40,11 +39,17 @@ public class ChatAdapter extends ParseQueryAdapter {
     @Override
     public View getItemView(ParseObject object, View v, ViewGroup parent) {
 
-        if (v == null && object.getString("userid").equals(Settings.Secure.ANDROID_ID) ) {
+//        if(object.getString("userid") == null){
+//            v = View.inflate(getContext(), R.layout.message, null);
+//        }
+        if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
             v = View.inflate(getContext(), R.layout.right_message, null);
-        } else if(v == null){
+        }
+        else {
             v = View.inflate(getContext(), R.layout.message, null);
         }
+
+
 
         super.getItemView(object, v, parent);
 
@@ -62,6 +67,12 @@ public class ChatAdapter extends ParseQueryAdapter {
         return v;
 
     }
+
+    @Override
+    public void notifyDataSetChanged(){
+        super.notifyDataSetChanged();
+    }
+
 
     @Override
     public ParseObject getItem(int i){
