@@ -1,95 +1,217 @@
 package edu.hmc.willarcherkevin.susurri;
 
-import android.location.Criteria;
+import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.provider.Settings;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
-import com.parse.LocationCallback;
-import com.parse.Parse;
-import com.parse.ParseACL;
-import com.parse.ParseAnalytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.PushService;
 import com.parse.SaveCallback;
+import com.parse.SignUpCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Created by archerwheeler on 2/26/15.
  */
-public class ChatroomsActivity extends FragmentActivity implements View.OnClickListener{
-    static ParseGeoPoint gPoint = new ParseGeoPoint(0, 0);
+public class ChatroomsActivity extends ActionBarActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    //Controls room fragments
     RoomPagerAdapter roomPagerAdapter;
     ViewPager mViewPager;
 
+    //Outside of the fragments
     Button mainButton;
     EditText mainEditText;
 
+    //For location data
+    public Location mLastLocation;
+    protected GoogleApiClient mGoogleApiClient;
+
+    //loading spinner
+    private ProgressBar progress;
+
+    //Lock for concurrency
+    private Lock lock;
+
+    //TODO replace with Parse user
+    //Unique device ID
+    public static String androidId;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupNotifications();
+
+        //Sign in or up as a Parse user
+
 
         setContentView(R.layout.room_pages);
 
-        // Initialize the Parse SDK.
-        Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
+        //Get unique device ID
+        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        ParseACL defaultACL = new ParseACL();
-//        Optionally enable public read access.
-        defaultACL.setPublicReadAccess(true);
-        defaultACL.setPublicWriteAccess(true);
-
-        ParseACL.setDefaultACL(defaultACL, true);
-
-        setupNotifications();
-
-        // allows read and write access to all users
-        ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
-        postACL.setPublicReadAccess(true);
-        postACL.setPublicWriteAccess(true);
-
-        // 2. Access the Button defined in layout XML
-        // and listen for it here
+        // Set up button and text edit
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
-
-        // 3. Access the EditText defined in layout XML
         mainEditText = (EditText) findViewById(R.id.main_edittext);
 
-        // ViewPager and its adapters use support library
-        // fragments, so use getSupportFragmentManager.
+        progress = (ProgressBar) findViewById(R.id.progress);
+        buildGoogleApiClient();
+    }
+
+    //Called by onConnect once location has been found
+    private void createRooms(){
         roomPagerAdapter =
                 new RoomPagerAdapter(
-                        getSupportFragmentManager());
+                        getSupportFragmentManager(), this);
+    }
+
+    //Call back function in Pager Aptr starts the display of
+    //The rooms once the device knows which rooms it is in
+    public void startRoom(){
+        //Display rooms pulled from parse cloud
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(roomPagerAdapter);
 
-        getLocation();
+        //Restore view
+        progress.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 
-    public void setupNotifications() {
-        ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
+    //Builds Google API Client so that location can be found
+    //Location is determined with connection callback interface
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    //Called when "Post" button is pressed
+    @Override
+    public void onClick(View v) {
+        //Find what chat room is displayed
+        int pos = mViewPager.getCurrentItem();
+        String room = mViewPager.getAdapter().getPageTitle(pos).toString();
+
+        //Send comment to parse and send push notification
+        sendtoParse(room);
+        sendToChannel(room);
+
+        //clear textedit
+        mainEditText.setText("");
+    }
+
+    //Send comment info to parse
+    private void sendtoParse(String room){
+        String comment = mainEditText.getText().toString();
+        ParseObject commentObject = new ParseObject("commentObject");
+
+        commentObject.put("comment", comment);
+        commentObject.put("room", room);
+        commentObject.put("userid", androidId);
+        commentObject.saveInBackground();
+    }
+
+    public void sendToChannel(String room) {
+
+        // TODO Auto-generated method stub
+        JSONObject obj;
+        try {
+            //Create notification to everyone in current room
+            obj =new JSONObject();
+            obj.put("action","edu.hmc.willarcherkevin.susurri." + room.toUpperCase().replaceAll("\\s","_"));
+
+            ParsePush push = new ParsePush();
+            ParseQuery query = ParseInstallation.getQuery();
+
+            //Send notification for Android users
+            push.setChannel("");
+            push.setQuery(query);
+            push.setData(obj);
+            push.sendInBackground();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void setUpUsers(){
+        ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
+            public void done(ParseUser user, ParseException e) {
+                if (user != null) {
+                    // Hooray! The user is logged in.
+                } else {
+                    ParseUser newUser = new ParseUser();
+                    user.setUsername(androidId);
+                    user.setPassword(androidId);
+
+                    // other fields can be set just like with ParseObject
+                    user.put("avatar", "Snail");
+
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                // Hooray! Let them use the app now.
+                            } else {
+                                // Sign up didn't succeed. Look at the ParseException
+                                // to figure out what went wrong
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        update();
+    }
+
+    @Override
+    protected  void onDestroy(){
+        ParsePush.unsubscribeInBackground("");
+        super.onDestroy();
+    }
+
+
+    //Set up push notificationss
+    public void setupNotifications() {
+        //TODO Not sure what this code does
+//        ParseAnalytics.trackAppOpenedInBackground(getIntent());
         // Specify an Activity to handle all pushes by default.
-        PushService.setDefaultPushCallback(this, ChatroomsActivity.class);
-        ParseUser.enableAutomaticUser();
+//        PushService.setDefaultPushCallback(this, ChatroomsActivity.class);
+//        ParseUser.enableAutomaticUser();
 
         // Save the current Installation to Parse.
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
-        ParsePush.subscribeInBackground("NewChatRoom", new SaveCallback() {
+        ParsePush.subscribeInBackground("", new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
@@ -101,87 +223,86 @@ public class ChatroomsActivity extends FragmentActivity implements View.OnClickL
         });
     }
 
-//    protected synchronized void buildGoogleApiClient() {
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(LocationServices.API)
-//                .build();
-//    }
+    private void update(){
+        //hide current view and creating loading icon
+        if (mViewPager != null) mViewPager.setVisibility(View.GONE);
+        progress.setVisibility(View.VISIBLE);
 
-    @Override
-    public void onClick(View v) {
-        int pos = mViewPager.getCurrentItem();
-        String room = mViewPager.getAdapter().getPageTitle(pos).toString();
-        sendtoParse(room);
-        sendToChannel(room);
+        //Check if connected
+        if (!mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
 
-        mainEditText.setText("");
-    }
-
-    private void sendtoParse(String room){
-        String comment = mainEditText.getText().toString();
-        getLocation();
-
-        ParseObject commentObject = new ParseObject("kevinobject");
-
-        commentObject.put("comment", comment);
-        commentObject.put("room", room);
-        commentObject.put("location", gPoint);
-
-        commentObject.saveInBackground();
-
-    }
-
-    public void getLocation(){
-        // Criteria defaults to web settings
-        Criteria criteria = new Criteria();
-//        criteria.setAccuracy(Criteria.ACCURACY_LOW);
-//        criteria.setAltitudeRequired(false);
-//        criteria.setBearingRequired(false);
-//        criteria.setCostAllowed(true);
-//        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        ParseGeoPoint.getCurrentLocationInBackground(10000, criteria, new LocationCallback() {
-            @Override
-            public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
-                if (e == null) {
-                    gPoint = parseGeoPoint;
-                    Log.d("Hello", "getLocation works");
-
-
-                } else {
-                    Log.e("Location", "Error Getting Location", e);
-                }
-            }
-
-        });
-
-    }
-
-    public void sendToChannel(String room) {
-        // Also add that value to the list shown in the ListView
-        String comment = mainEditText.getText().toString();
-
-        // TODO Auto-generated method stub
-        JSONObject obj;
-        try {
-            obj =new JSONObject();
-
-            obj.put("action","edu.hmc.willarcherkevin.susurri." + room.toUpperCase().replaceAll("\\s","_"));
-
-            ParsePush push = new ParsePush();
-            ParseQuery query = ParseInstallation.getQuery();
-
-
-            // Notification for Android users
-            push.setChannel("NewChatRoom");
-            push.setQuery(query);
-            push.setData(obj);
-            push.sendInBackground();
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        //otherwise update location directly
+        else{
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            createRooms();
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //Stop looking for location
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        //Get last know location from android System
+        //Should be accurate and battery efficient
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        Log.i("Location", "CONNECTED");
+
+        //If location found query parse for rooms nearby
+        if (mLastLocation != null) {
+            createRooms();
+        }
+        //No location found. User probably has GPS turned off
+        else {
+            Log.i("Location", "NULL location");
+            //TODO Display message asking user to turn on location settings
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_chat, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                onStart();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i("Location", "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i("Location", "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
 }
