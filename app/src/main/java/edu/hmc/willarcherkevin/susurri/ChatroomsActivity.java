@@ -64,7 +64,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         setupNotifications();
 
         //Sign in or up as a Parse user
-
+        setUpUsers();
 
         setContentView(R.layout.room_pages);
 
@@ -158,7 +158,8 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
             e.printStackTrace();
         }
     }
-
+    // setUpUsers first checks to see if a ParseUser exists and if so it will log the user in
+    // otherwise, it creates a new ParseUser with the username and password being the androidID
     private void setUpUsers(){
         ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
@@ -187,14 +188,38 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         });
     }
 
+    private void resumeUsers(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            // do stuff with the user
+        } else {
+            ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
+                public void done(ParseUser user, ParseException e) {
+                    if (user != null) {
+                        // Hooray! The user is logged in.
+                    } else {
+                        // Signup failed. Look at the ParseException to see what happened.
+                    }
+                }
+            });
+        }
+    }
+
+    private void logoutUsers(){
+        ParseUser.logOut();
+        ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+        resumeUsers();
         update();
     }
 
     @Override
     protected  void onDestroy(){
+        logoutUsers();
         ParsePush.unsubscribeInBackground("");
         super.onDestroy();
     }
