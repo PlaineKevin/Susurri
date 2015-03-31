@@ -66,11 +66,11 @@ public class Susurri extends Application {
                     // Hooray! The user is logged in.
                 } else {
                     theUser = new ParseUser();
-                    user.setUsername(androidId);
-                    user.setPassword(androidId);
+                    theUser.setUsername(androidId);
+                    theUser.setPassword(androidId);
 
                     // other fields can be set just like with ParseObject
-                    user.put("avatar", "Snail");
+                    theUser.put("avatar", "Snail");
 
                     user.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
