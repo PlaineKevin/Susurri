@@ -19,7 +19,7 @@ public class ChatRoomFragment extends Fragment{
 
 
     //default room defined here b/c fragments should have default constructors
-    String room = "The Great Unknown";
+    String room = "";
 
     //Fragments are required to have empty constructors
     //so use a setRoom method to set the room

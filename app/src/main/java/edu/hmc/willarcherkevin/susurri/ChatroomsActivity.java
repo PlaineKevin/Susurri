@@ -1,5 +1,6 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -200,6 +201,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
             mGoogleApiClient.connect();
         }
 
+
         //otherwise update location directly
         else{
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
@@ -251,6 +253,8 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
                 onStart();
                 return true;
             case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
