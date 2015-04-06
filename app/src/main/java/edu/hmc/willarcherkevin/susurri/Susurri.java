@@ -63,7 +63,12 @@ public class Susurri extends Application {
         ParseUser.logInInBackground(androidId, androidId, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
-                    // Hooray! The user is logged in.
+                    theUser = user;
+
+                    // allows read and write access to all users
+                    ParseACL postACL = new ParseACL(theUser);
+                    postACL.setPublicReadAccess(true);
+                    postACL.setPublicWriteAccess(true);
                 } else {
                     theUser = new ParseUser();
                     theUser.setUsername(androidId);
@@ -76,9 +81,12 @@ public class Susurri extends Application {
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Hooray! Let them use the app now.
+                                // allows read and write access to all users
+                                ParseACL postACL = new ParseACL(theUser);
+                                postACL.setPublicReadAccess(true);
+                                postACL.setPublicWriteAccess(true);
                             } else {
-                                // Sign up didn't succeed. Look at the ParseException
-                                // to figure out what went wrong
+
                             }
                         }
                     });
