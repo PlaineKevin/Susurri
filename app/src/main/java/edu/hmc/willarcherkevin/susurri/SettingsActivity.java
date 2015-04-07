@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -140,6 +141,13 @@ public class SettingsActivity extends PreferenceActivity {
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
+                // TODO make it less specific to example_list if possible
+                // also there was code duplication in the same function
+                if ((preference.getKey()).toString().equals("example_list")) {
+                    ParseUser.getCurrentUser().put("avatar", listPreference.getEntries()[index]);
+                    ParseUser.getCurrentUser().saveInBackground();
+                }
+
 
                 // Set the summary to reflect the new value.
                 preference.setSummary(
@@ -172,7 +180,15 @@ public class SettingsActivity extends PreferenceActivity {
             } else {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
+                // right now it's a little sloppy the way I handle whether the screen name
+                // category is being changed
+                // TODO make it less specific to example_text if possible
+                if ((preference.getKey()).toString().equals("example_text")) {
+                    ParseUser.getCurrentUser().put("screenName", stringValue);
+                    ParseUser.getCurrentUser().saveInBackground();
+                }
                 preference.setSummary(stringValue);
+
             }
             return true;
         }
@@ -191,12 +207,14 @@ public class SettingsActivity extends PreferenceActivity {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
+
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+
     }
 
     /**

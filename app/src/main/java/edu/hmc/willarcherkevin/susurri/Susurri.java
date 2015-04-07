@@ -20,7 +20,7 @@ public class Susurri extends Application {
     public static String androidId;
 
     //Create a global ParseUser object
-    public ParseUser theUser;
+    public ParseUser theUser = null;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -34,15 +34,17 @@ public class Susurri extends Application {
         setUpUsers();
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-        ParseACL defaultACL = new ParseACL();
-        defaultACL.setPublicReadAccess(true);
-        defaultACL.setPublicWriteAccess(true);
-        ParseACL.setDefaultACL(defaultACL, true);
+//        ParseACL defaultACL = new ParseACL();
+//        defaultACL.setPublicReadAccess(true);
+//        defaultACL.setPublicWriteAccess(true);
+//        ParseACL.setDefaultACL(defaultACL, true);
 
         // allows read and write access to all users
-        ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
-        postACL.setPublicReadAccess(true);
-        postACL.setPublicWriteAccess(true);
+        if (ParseUser.getCurrentUser() != null) {
+            ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
+            postACL.setPublicReadAccess(true);
+            postACL.setPublicWriteAccess(true);
+        }
     }
 
     @Override
@@ -77,6 +79,7 @@ public class Susurri extends Application {
                     // other fields can be set just like with ParseObject
                     theUser.put("avatar", "Snail");
                     theUser.put("name", "Timmy");
+                    theUser.put("screenName", "Default");
 
                     theUser.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
