@@ -18,6 +18,8 @@
             android:layout_weight="1"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dip"
 
             android:maxLength="140"
             android:singleLine="false"
