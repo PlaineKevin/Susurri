@@ -201,6 +201,10 @@ public class SettingsActivity extends PreferenceActivity {
                         .getString(preference.getKey(), ""));
         Log.d("changing username",PreferenceManager.getDefaultSharedPreferences(preference.getContext())
                 .getString(preference.getKey(),""));
+        // parse stuff
+//        if (preference.getKey() == "example_text") {
+//
+//        }
     }
 
     /**
@@ -220,7 +224,6 @@ public class SettingsActivity extends PreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
-            Log.d("changing username still", findPreference("example_text").toString());
         }
     }
 
