@@ -16,7 +16,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
-
+import android.util.Log;
 
 import java.util.List;
 
@@ -39,6 +39,7 @@ public class SettingsActivity extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
+    Susurri activity;
 
 
     @Override
@@ -191,12 +192,15 @@ public class SettingsActivity extends PreferenceActivity {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
+
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+        Log.d("changing username",PreferenceManager.getDefaultSharedPreferences(preference.getContext())
+                .getString(preference.getKey(),""));
     }
 
     /**
@@ -216,6 +220,7 @@ public class SettingsActivity extends PreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
+            Log.d("changing username still", findPreference("example_text").toString());
         }
     }
 

@@ -20,7 +20,7 @@ public class Susurri extends Application {
     public static String androidId;
 
     //Create a global ParseUser object
-    public ParseUser theUser;
+    public ParseUser theUser = null;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -40,9 +40,11 @@ public class Susurri extends Application {
         ParseACL.setDefaultACL(defaultACL, true);
 
         // allows read and write access to all users
-        ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
-        postACL.setPublicReadAccess(true);
-        postACL.setPublicWriteAccess(true);
+        if (ParseUser.getCurrentUser() != null) {
+            ParseACL postACL = new ParseACL(ParseUser.getCurrentUser());
+            postACL.setPublicReadAccess(true);
+            postACL.setPublicWriteAccess(true);
+        }
     }
 
     @Override
