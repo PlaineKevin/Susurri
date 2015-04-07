@@ -18,6 +18,8 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.parse.ParseUser;
+
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public class SettingsActivity extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
-    Susurri activity;
+    static Susurri activity;
 
 
     @Override
@@ -173,7 +175,15 @@ public class SettingsActivity extends PreferenceActivity {
             } else {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
+                // right now it's a little sloppy the way I handle whether the screen name
+                // category is being changed
+                // TODO make it less specific to example_text if possible
+                if ((preference.getKey()).toString().equals("example_text")) {
+                    ParseUser.getCurrentUser().put("screenName", stringValue);
+                    ParseUser.getCurrentUser().saveInBackground();
+                }
                 preference.setSummary(stringValue);
+
             }
             return true;
         }
@@ -199,12 +209,23 @@ public class SettingsActivity extends PreferenceActivity {
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
-        Log.d("changing username",PreferenceManager.getDefaultSharedPreferences(preference.getContext())
-                .getString(preference.getKey(),""));
+
         // parse stuff
-//        if (preference.getKey() == "example_text") {
-//
-//        }
+
+        Log.d("pref", preference.getKey());
+        if ((preference.getKey()).toString().equals("example_text")) {
+            Log.d("screenName", PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getString(preference.getKey(), ""));
+//            if (activity.theUser != null) {
+//                Log.d("hello","hello");
+//                activity.theUser.put("screenName","hello");
+//                        PreferenceManager
+//                                .getDefaultSharedPreferences(preference.getContext())
+//                                .getString(preference.getKey(), "");
+//                activity.theUser.saveInBackground();
+//            }
+        }
     }
 
     /**
