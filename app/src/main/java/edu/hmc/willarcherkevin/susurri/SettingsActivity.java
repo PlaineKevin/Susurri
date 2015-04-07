@@ -16,7 +16,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.parse.ParseUser;
 
@@ -41,7 +40,6 @@ public class SettingsActivity extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
-    static Susurri activity;
 
 
     @Override
@@ -210,22 +208,6 @@ public class SettingsActivity extends PreferenceActivity {
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
 
-        // parse stuff
-
-        Log.d("pref", preference.getKey());
-        if ((preference.getKey()).toString().equals("example_text")) {
-            Log.d("screenName", PreferenceManager
-                    .getDefaultSharedPreferences(preference.getContext())
-                    .getString(preference.getKey(), ""));
-//            if (activity.theUser != null) {
-//                Log.d("hello","hello");
-//                activity.theUser.put("screenName","hello");
-//                        PreferenceManager
-//                                .getDefaultSharedPreferences(preference.getContext())
-//                                .getString(preference.getKey(), "");
-//                activity.theUser.saveInBackground();
-//            }
-        }
     }
 
     /**
