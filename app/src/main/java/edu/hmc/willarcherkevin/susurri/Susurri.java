@@ -76,6 +76,7 @@ public class Susurri extends Application {
 
                     // other fields can be set just like with ParseObject
                     theUser.put("avatar", "Snail");
+                    theUser.put("name", "Timmy");
 
                     theUser.signUpInBackground(new SignUpCallback() {
                         public void done(ParseException e) {
