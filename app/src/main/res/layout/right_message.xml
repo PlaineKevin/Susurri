@@ -23,7 +23,7 @@
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/icon"
 
-        android:background="#FFFFFF"
+        android:background="@drawable/background_with_shadow"
         android:padding="6dip">
 
         <TextView
@@ -35,7 +35,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/icon"
             android:text="Generic comment"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            />
 
         <TextView
             android:id="@+id/secondline"
@@ -46,7 +47,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/icon"
             android:text="time is a flat circle"
-            android:textSize="8sp" />
+            android:textSize="8sp"
+            />
     </LinearLayout>
 
 

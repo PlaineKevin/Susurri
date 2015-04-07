@@ -15,26 +15,24 @@
         <!-- Displays keyboard when touched -->
         <EditText
             android:id="@+id/main_edittext"
-            android:layout_weight="2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+
             android:maxLength="140"
             android:singleLine="false"
             android:hint="@string/hint"
             />
 
 
-
-        <Button
+        <ImageButton
+            android:src="@drawable/ic_action_send"
             android:id="@+id/main_button"
-            android:layout_weight="7"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:color="@drawable/background_selector"
+        />
 
-            android:layout_marginLeft="20dp"
-            android:text="@string/button"
-            />
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
@@ -51,6 +49,7 @@
             android:layout_gravity="top"
             android:background="#33b5e5"
             android:textColor="#fff"
+
             android:paddingTop="4dp"
             android:paddingBottom="4dp" />
 

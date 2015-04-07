@@ -11,8 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -40,7 +40,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     ViewPager mViewPager;
 
     //Outside of the fragments
-    Button mainButton;
+    ImageButton mainButton;
     EditText mainEditText;
 
     //For location data
@@ -68,7 +68,7 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         // Set up button and text edit
-        mainButton = (Button) findViewById(R.id.main_button);
+        mainButton = (ImageButton) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
         mainEditText = (EditText) findViewById(R.id.main_edittext);
 

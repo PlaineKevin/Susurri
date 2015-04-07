@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#FFFFFF"
+        android:background="@drawable/background_with_shadow"
         android:padding="6dip"
         >
 
@@ -29,7 +29,8 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/icon"
             android:text="Generic comment"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            />
 
         <TextView
             android:id="@+id/secondline"
@@ -40,6 +41,7 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/icon"
             android:text="time is a flat circle"
-            android:textSize="8sp" />
+            android:textSize="8sp"
+            />
     </LinearLayout>
 </LinearLayout>
