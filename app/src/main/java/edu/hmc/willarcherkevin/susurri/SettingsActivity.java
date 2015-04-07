@@ -141,6 +141,13 @@ public class SettingsActivity extends PreferenceActivity {
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
+                // TODO make it less specific to example_list if possible
+                // also there was code duplication in the same function
+                if ((preference.getKey()).toString().equals("example_list")) {
+                    ParseUser.getCurrentUser().put("avatar", listPreference.getEntries()[index]);
+                    ParseUser.getCurrentUser().saveInBackground();
+                }
+
 
                 // Set the summary to reflect the new value.
                 preference.setSummary(
