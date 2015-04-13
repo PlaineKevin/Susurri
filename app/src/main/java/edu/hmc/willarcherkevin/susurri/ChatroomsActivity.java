@@ -23,6 +23,7 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONException;
@@ -129,6 +130,8 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
         commentObject.put("comment", comment);
         commentObject.put("room", room);
         commentObject.put("userid", androidId);
+        // does this work?
+        commentObject.put("avatar", ParseUser.getCurrentUser().get("avatar"));
         commentObject.saveInBackground();
     }
 

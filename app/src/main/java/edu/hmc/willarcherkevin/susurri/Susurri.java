@@ -77,7 +77,7 @@ public class Susurri extends Application {
                     theUser.setPassword(androidId);
 
                     // other fields can be set just like with ParseObject
-                    theUser.put("avatar", "Snail");
+                    theUser.put("avatar", "bear");
                     theUser.put("name", "Timmy");
                     theUser.put("screenName", "Default");
 

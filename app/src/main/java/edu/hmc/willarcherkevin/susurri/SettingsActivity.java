@@ -52,7 +52,6 @@ public class SettingsActivity extends PreferenceActivity {
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
-                // TODO make it less specific to example_list if possible
                 // also there was code duplication in the same function
                 if ((preference.getKey()).toString().equals("avatar_list")) {
                     ParseUser.getCurrentUser().put("avatar", listPreference.getEntries()[index]);
@@ -71,7 +70,6 @@ public class SettingsActivity extends PreferenceActivity {
                 // simple string representation.
                 // right now it's a little sloppy the way I handle whether the screen name
                 // category is being changed
-                // TODO make it less specific to example_text if possible
                 if ((preference.getKey()).toString().equals("example_text")) {
                     ParseUser.getCurrentUser().put("screenName", stringValue);
                     ParseUser.getCurrentUser().saveInBackground();
