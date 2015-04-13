@@ -1,8 +1,10 @@
 package edu.hmc.willarcherkevin.susurri;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
@@ -41,11 +43,36 @@ public class ChatAdapter extends ParseQueryAdapter {
 
 //        if(object.getString("userid") == null){
 //            v = View.inflate(getContext(), R.layout.message, null);
-//        }
+
+        String chosenAvatar = object.getString("avatar");
+        Log.d("avatar", chosenAvatar);
+        int id = 0;
+        if (chosenAvatar.equals("bear")) {
+            id = R.drawable.walrus;
+        } else if (chosenAvatar.equals("cow")) {
+            id = R.drawable.cow;
+        } else if (chosenAvatar.equals("giraffe")) {
+            id = R.drawable.giraffe;
+        } else if (chosenAvatar.equals("monkey")) {
+            id = R.drawable.monkey;
+        } else if (chosenAvatar.equals("narwal")) {
+            id = R.drawable.narwal;
+        } else if (chosenAvatar.equals("walrus")) {
+            id = R.drawable.walrus;
+        } else {
+            id = R.drawable.walrus;
+        }
+
         if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
+
+
+//            ImageView userIcon = (ImageView) v.findViewById(R.id.right_icon);
+//            userIcon.setImageResource(id);
             v = View.inflate(getContext(), R.layout.right_message, null);
         }
         else {
+            ImageView userIcon = (ImageView) v.findViewById(R.id.icon);
+            userIcon.setImageResource(id);
             v = View.inflate(getContext(), R.layout.message, null);
         }
 
@@ -55,6 +82,11 @@ public class ChatAdapter extends ParseQueryAdapter {
 
         TextView commentLine = (TextView) v.findViewById(R.id.line);
         commentLine.setText(object.getString("comment"));
+
+        // set the id to icon right/ icon left in right_message xml and left_message xml
+
+//        int id = R.drawable.walrus;
+
 
         Date time = object.getCreatedAt();
 
