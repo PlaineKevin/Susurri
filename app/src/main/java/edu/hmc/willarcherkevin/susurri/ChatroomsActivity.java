@@ -126,12 +126,13 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     private void sendtoParse(String room){
         String comment = mainEditText.getText().toString();
         ParseObject commentObject = new ParseObject("commentObject");
+        ParseUser currentUser = ParseUser.getCurrentUser();
 
         commentObject.put("comment", comment);
         commentObject.put("room", room);
         commentObject.put("userid", androidId);
-        // does this work?
-        commentObject.put("avatar", ParseUser.getCurrentUser().get("avatar"));
+        commentObject.put("avatar", currentUser.get("avatar"));
+        commentObject.put("screenName", currentUser.get("screenName"));
         commentObject.saveInBackground();
     }
 
