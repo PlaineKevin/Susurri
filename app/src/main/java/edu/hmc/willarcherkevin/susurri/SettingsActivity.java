@@ -5,6 +5,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.parse.ParseUser;
 
@@ -36,6 +37,9 @@ public class SettingsActivity extends PreferenceActivity {
 
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
+
+        bindPreferenceSummaryToValue(findPreference("example_text"));
+        bindPreferenceSummaryToValue(findPreference("avatar_list"));
     }
 
     /**
@@ -46,6 +50,7 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
+            Log.d("preferenceKey", stringValue);
 
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in

@@ -66,14 +66,15 @@ public class ChatAdapter extends ParseQueryAdapter {
         if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
 
 
-//            ImageView userIcon = (ImageView) v.findViewById(R.id.right_icon);
-//            userIcon.setImageResource(id);
+
             v = View.inflate(getContext(), R.layout.right_message, null);
+            ImageView userIcon = (ImageView) v.findViewById(R.id.right_icon);
+            userIcon.setImageResource(id);
         }
         else {
+            v = View.inflate(getContext(), R.layout.message, null);
             ImageView userIcon = (ImageView) v.findViewById(R.id.icon);
             userIcon.setImageResource(id);
-            v = View.inflate(getContext(), R.layout.message, null);
         }
 
 
