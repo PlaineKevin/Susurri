@@ -48,7 +48,7 @@ public class ChatAdapter extends ParseQueryAdapter {
         Log.d("avatar", chosenAvatar);
         int id = 0;
         if (chosenAvatar.equals("bear")) {
-            id = R.drawable.walrus;
+            id = R.drawable.bear;
         } else if (chosenAvatar.equals("cow")) {
             id = R.drawable.cow;
         } else if (chosenAvatar.equals("giraffe")) {
