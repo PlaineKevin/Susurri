@@ -75,7 +75,8 @@ public class Susurri extends Application {
 
                     // other fields can be set just like with ParseObject
                     theUser.put("avatar", "bear");
-                    theUser.put("name", "Timmy");
+                    // screen name counter: you get three screen name changes
+                    theUser.put("SNC", 3);
                     theUser.put("screenName", "Default");
 
                     theUser.signUpInBackground(new SignUpCallback() {

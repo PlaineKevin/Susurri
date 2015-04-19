@@ -1,11 +1,12 @@
 package edu.hmc.willarcherkevin.susurri;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.parse.ParseUser;
 
@@ -46,21 +47,33 @@ public class SettingsActivity extends PreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
+    // TODO working on limiting the number of name changes
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
-            Log.d("preferenceKey", stringValue);
+            ParseUser currentUser = ParseUser.getCurrentUser();
+
+            // cannot just call the makeText sentence one and have the other stuff be variables
+            // might be due to us being inside a literal function
+            Toast toast;
+            CharSequence text;
+            int duration = Toast.LENGTH_SHORT;
+            Context context = preference.getContext();
 
             if (preference instanceof ListPreference) {
+                text = "Your avatar preferences have been updated!";
+
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
                 int index = listPreference.findIndexOfValue(stringValue);
                 // also there was code duplication in the same function
                 if ((preference.getKey()).toString().equals("avatar_list")) {
-                    ParseUser.getCurrentUser().put("avatar", listPreference.getEntries()[index]);
-                    ParseUser.getCurrentUser().saveInBackground();
+                    currentUser.put("avatar", listPreference.getEntries()[index]);
+                    currentUser.saveInBackground();
+                    toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 }
 
 
@@ -76,8 +89,22 @@ public class SettingsActivity extends PreferenceActivity {
                 // right now it's a little sloppy the way I handle whether the screen name
                 // category is being changed
                 if ((preference.getKey()).toString().equals("example_text")) {
-                    ParseUser.getCurrentUser().put("screenName", stringValue);
-                    ParseUser.getCurrentUser().saveInBackground();
+                    int SNC = (int) ParseUser.getCurrentUser().get("SNC");
+                    if (SNC == 0) {
+                        text = "You have no more name changes left";
+                        toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                        return true;
+                    } else {
+                        SNC--;
+                        text = "Your screen name has changed. You have " + String.valueOf(SNC)
+                                + " changes left to your screen name.";
+                        currentUser.put("screenName", stringValue);
+                        currentUser.put("SNC", SNC);
+                        currentUser.saveInBackground();
+                        toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    }
                 }
                 preference.setSummary(stringValue);
 
