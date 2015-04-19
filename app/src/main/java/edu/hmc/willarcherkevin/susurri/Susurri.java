@@ -3,6 +3,7 @@ package edu.hmc.willarcherkevin.susurri;
 import android.app.Application;
 import android.content.res.Configuration;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.parse.LogInCallback;
 import com.parse.Parse;
@@ -34,10 +35,6 @@ public class Susurri extends Application {
         setUpUsers();
         // Initialize the Parse SDK.
         Parse.initialize(this, "9nWnCUTdcZrrXtlGQKOjgPJWayPRKyMSQzU2bXhX", "dCjilcjkIqYAlyx55CIwFqyVjzl1GvKAuML64sXo");
-//        ParseACL defaultACL = new ParseACL();
-//        defaultACL.setPublicReadAccess(true);
-//        defaultACL.setPublicWriteAccess(true);
-//        ParseACL.setDefaultACL(defaultACL, true);
 
         // allows read and write access to all users
         if (ParseUser.getCurrentUser() != null) {
@@ -90,7 +87,7 @@ public class Susurri extends Application {
                                 postACL.setPublicReadAccess(true);
                                 postACL.setPublicWriteAccess(true);
                             } else {
-
+                                Log.d("Error", "Failure to successfully sign up user");
                             }
                         }
                     });
@@ -99,6 +96,7 @@ public class Susurri extends Application {
         });
     }
 
+    // never used but may be a nice function to have in certain cases
     private void resumeUsers() {
         theUser = ParseUser.getCurrentUser();
         if (theUser != null) {

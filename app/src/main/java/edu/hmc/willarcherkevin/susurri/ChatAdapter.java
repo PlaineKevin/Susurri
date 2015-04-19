@@ -40,13 +40,13 @@ public class ChatAdapter extends ParseQueryAdapter {
     // Customize the layout by overriding getItemView
     @Override
     public View getItemView(ParseObject object, View v, ViewGroup parent) {
-
-//        if(object.getString("userid") == null){
-//            v = View.inflate(getContext(), R.layout.message, null);
+        int id = 0;
 
         String chosenAvatar = object.getString("avatar");
         Log.d("avatar", chosenAvatar);
-        int id = 0;
+
+        // manually set the image view drawables
+        // due to the way R.drawable works, we cannot just append the string to the end of this line
         if (chosenAvatar.equals("bear")) {
             id = R.drawable.bear;
         } else if (chosenAvatar.equals("cow")) {
@@ -64,9 +64,6 @@ public class ChatAdapter extends ParseQueryAdapter {
         }
 
         if (object.getString("userid").equals(ChatroomsActivity.androidId) ) {
-
-
-
             v = View.inflate(getContext(), R.layout.right_message, null);
             ImageView userIcon = (ImageView) v.findViewById(R.id.right_icon);
             userIcon.setImageResource(id);
@@ -78,16 +75,10 @@ public class ChatAdapter extends ParseQueryAdapter {
         }
 
 
-
         super.getItemView(object, v, parent);
 
         TextView commentLine = (TextView) v.findViewById(R.id.line);
         commentLine.setText(object.getString("screenName") +": " + object.getString("comment"));
-
-        // set the id to icon right/ icon left in right_message xml and left_message xml
-
-//        int id = R.drawable.walrus;
-
 
         Date time = object.getCreatedAt();
 

@@ -138,7 +138,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
 
     public void sendToChannel(String room) {
 
-        // TODO Auto-generated method stub
         JSONObject obj;
         try {
             //Create notification to everyone in current room
@@ -154,7 +153,6 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
             push.setData(obj);
             push.sendInBackground();
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -172,14 +170,8 @@ public class ChatroomsActivity extends ActionBarActivity implements View.OnClick
     }
 
 
-    //Set up push notificationss
+    //Set up push notifications
     public void setupNotifications() {
-        //TODO Not sure what this code does
-//        ParseAnalytics.trackAppOpenedInBackground(getIntent());
-        // Specify an Activity to handle all pushes by default.
-//        PushService.setDefaultPushCallback(this, ChatroomsActivity.class);
-//        ParseUser.enableAutomaticUser();
-
         // Save the current Installation to Parse.
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
