@@ -22,10 +22,14 @@ import com.parse.ParseUser;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity {
+    static boolean justCreatedAvatar = false;
+    static boolean justCreatedSN = false;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        justCreatedAvatar = true;
+        justCreatedSN = true;
         setupSimplePreferencesScreen();
     }
 
@@ -47,7 +51,6 @@ public class SettingsActivity extends PreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    // TODO working on limiting the number of name changes
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -70,10 +73,14 @@ public class SettingsActivity extends PreferenceActivity {
                 int index = listPreference.findIndexOfValue(stringValue);
                 // also there was code duplication in the same function
                 if ((preference.getKey()).toString().equals("avatar_list")) {
-                    currentUser.put("avatar", listPreference.getEntries()[index]);
-                    currentUser.saveInBackground();
-                    toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                    if (justCreatedAvatar == false) {
+                        currentUser.put("avatar", listPreference.getEntries()[index]);
+                        currentUser.saveInBackground();
+                        toast = Toast.makeText(context, text, duration);
+                        toast.show();
+                    } else {
+                        justCreatedAvatar = false;
+                    }
                 }
 
 
@@ -89,23 +96,31 @@ public class SettingsActivity extends PreferenceActivity {
                 // right now it's a little sloppy the way I handle whether the screen name
                 // category is being changed
                 if ((preference.getKey()).toString().equals("example_text")) {
-                    int SNC = (int) ParseUser.getCurrentUser().get("SNC");
-                    if (SNC == 0) {
-                        text = "You have no more name changes left";
-                        toast = Toast.makeText(context, text, duration);
-                        toast.show();
-                        return true;
+                    int SNC = (int) currentUser.get("SNC");
+                    if (justCreatedSN == false) {
+                        if (SNC == 0) {
+                            text = "You have no more name changes left";
+                            toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                            return true;
+                        } else {
+                            SNC--;
+                            text = "Your screen name has changed. You have " + String.valueOf(SNC)
+                                    + " changes left to your screen name.";
+                            currentUser.put("screenName", stringValue);
+                            currentUser.put("SNC", SNC);
+                            currentUser.saveInBackground();
+                            toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
                     } else {
-                        SNC--;
-                        text = "Your screen name has changed. You have " + String.valueOf(SNC)
-                                + " changes left to your screen name.";
-                        currentUser.put("screenName", stringValue);
-                        currentUser.put("SNC", SNC);
-                        currentUser.saveInBackground();
-                        toast = Toast.makeText(context, text, duration);
-                        toast.show();
+                        justCreatedSN = false;
+                        String screenName = (String) currentUser.get("screenName");
+                        preference.setSummary(screenName);
+                        return true;
                     }
                 }
+
                 preference.setSummary(stringValue);
 
             }
