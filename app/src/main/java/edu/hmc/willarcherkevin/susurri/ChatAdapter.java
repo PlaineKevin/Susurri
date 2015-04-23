@@ -11,7 +11,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,8 +25,16 @@ public class ChatAdapter extends ParseQueryAdapter {
     public ChatAdapter(Context context, final String room){
         super(context, new ParseQueryAdapter.QueryFactory<ParseObject>() {
             public ParseQuery create() {
+                //get current time
+                Date now = new Date();
+                //set to 24h ago
+                long t = now.getTime() - 86400000;
+                now.setTime(t);
+
+
                 ParseQuery query = new ParseQuery("commentObject");
                 query.whereEqualTo("room", room);
+                query.whereGreaterThan("createdAt", now);
                 query.orderByDescending("createdAt");
                 query.setLimit(MAX_LENGTH);
                 return query;
@@ -78,7 +85,6 @@ public class ChatAdapter extends ParseQueryAdapter {
         }
 
 
-
         super.getItemView(object, v, parent);
 
         TextView commentLine = (TextView) v.findViewById(R.id.line);
@@ -86,11 +92,12 @@ public class ChatAdapter extends ParseQueryAdapter {
 
         Date time = object.getCreatedAt();
 
-        Format formatter = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("h:mma");
         String s = formatter.format(time);
 
         TextView timeLine = (TextView) v.findViewById(R.id.secondline);
-        timeLine.setText(object.getString("screenName") + ": " + s);
+        timeLine.setText(object.getString("screenName") + ", " + s );
+
 
         return v;
 
